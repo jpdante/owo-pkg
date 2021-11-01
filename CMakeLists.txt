@@ -2,7 +2,15 @@ set (CMAKE_CXX_STANDARD 17)
 cmake_minimum_required (VERSION 3.8)
 
 project ("owo-pkg")
-add_executable (owo "src/owo-pkg.h" "src/owo-pkg.cpp" "src/cli.h" "src/cli.cpp" "src/http.h" "src/http.cpp" "src/commands/install.h" "src/commands/install.cpp" "src/commands/remove.h" "src/commands/remove.cpp" "src/commands/update.h" "src/commands/update.cpp")
+add_executable (owo
+"src/owo-pkg.h" "src/owo-pkg.cpp"
+"src/cli.h" "src/cli.cpp"
+"src/http.h" "src/http.cpp"
+"src/cache.h" "src/cache.cpp"
+"src/repo.h" "src/repo.cpp"
+"src/commands/install.h""src/commands/install.cpp"
+"src/commands/remove.h" "src/commands/remove.cpp"
+"src/commands/update.h" "src/commands/update.cpp")
 
 # Set vars
 set(CMAKE_MODULE_PATH lib)

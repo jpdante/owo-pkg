@@ -46,6 +46,8 @@ bool HttpClient::downloadFile(std::string url, std::string path) {
         std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)));
     request.perform();
 
+    myfile.close();
+
     std::cout << "Complete!" << std::endl;
     indicators::show_console_cursor(true);
     return true;
