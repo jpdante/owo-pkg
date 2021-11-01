@@ -1,0 +1,8 @@
+[submodule "lib/curlpp"]
+	path = lib/curlpp
+	url = https://github.com/jpbarrette/curlpp.git
+	branch = v0.8.1
+[submodule "lib/clipp"]
+	path = lib/clipp
+	url = https://github.com/muellan/clipp.git
+	branch = v1.2.3

@@ -1,0 +1,12 @@
+set (CMAKE_CXX_STANDARD 17)
+cmake_minimum_required (VERSION 3.8)
+
+project ("owo-pkg")
+add_executable (owo "src/owo-pkg.h" "src/owo-pkg.cpp" "src/cli.h" "src/cli.cpp" "src/http.h" "src/http.cpp" "src/commands/install.h" "src/commands/install.cpp" "src/commands/remove.h" "src/commands/remove.cpp" "src/commands/update.h" "src/commands/update.cpp")
+
+set(CMAKE_MODULE_PATH lib)
+
+add_subdirectory(lib/curlpp)
+target_link_libraries(owo PUBLIC curlpp)
+set(EXTERNAL_LIB_HEADERS lib/curlpp/include)
+target_include_directories(owo PRIVATE ${EXTERNAL_LIB_HEADERS})
