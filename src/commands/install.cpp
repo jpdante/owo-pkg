@@ -7,7 +7,8 @@ namespace cmd {
 
 void install() { 
   std::cout << "Install" << std::endl;
-  download();
+  HttpClient client;
+  client.downloadFile("http://ovh.net/files/10Mio.dat", "../tmp/data.bin");
 }
 
 }  // namespace cmd

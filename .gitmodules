@@ -6,3 +6,11 @@
 	path = lib/clipp
 	url = https://github.com/muellan/clipp.git
 	branch = v1.2.3
+[submodule "lib/indicators"]
+	path = lib/indicators
+	url = https://github.com/p-ranav/indicators.git
+	branch = v2.2
+[submodule "lib/json"]
+	path = lib/json
+	url = https://github.com/nlohmann/json.git
+	branch = v3.10.4
