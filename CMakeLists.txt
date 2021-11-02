@@ -8,6 +8,7 @@ add_executable (owo
 "src/http.h" "src/http.cpp"
 "src/cache.h" "src/cache.cpp"
 "src/repo.h" "src/repo.cpp"
+"src/package.h" "src/package.cpp"
 "src/commands/install.h""src/commands/install.cpp"
 "src/commands/remove.h" "src/commands/remove.cpp"
 "src/commands/update.h" "src/commands/update.cpp")

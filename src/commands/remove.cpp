@@ -4,6 +4,8 @@
 
 namespace cmd {
 
-void remove() { std::cout << "Remove" << std::endl; }
+void remove(std::set<std::string> packages, bool verbose, bool force) {
+  std::cout << "Remove" << std::endl;
+}
 
 }  // namespace cmd

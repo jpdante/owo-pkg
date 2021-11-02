@@ -27,6 +27,10 @@ HttpClient::HttpClient() {
           std::vector<indicators::FontStyle>{indicators::FontStyle::bold}}};
 }
 
+HttpClient::~HttpClient() {
+  delete progressBar;
+}
+
 bool HttpClient::downloadFile(std::string url, std::string path) {
   try {
     curlpp::Cleanup myCleanup;

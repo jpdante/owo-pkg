@@ -5,6 +5,7 @@
 class HttpClient {
  public:
   HttpClient();
+  ~HttpClient();
 
  private:
   indicators::ProgressBar* progressBar;
