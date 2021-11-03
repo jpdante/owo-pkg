@@ -6,10 +6,10 @@
 
 namespace cmd {
 
-void install(std::set<std::string> packages, bool verbose, bool force) {
+void install(Config config, std::set<std::string> packages, bool verbose, bool force) {
   std::cout << "Install" << std::endl;
   HttpClient client;
-  client.downloadFile("http://ovh.net/files/10Mio.dat", "../tmp/data.bin");
+  //client.downloadFile("http://ovh.net/files/10Mio.dat", "../tmp/data.bin");
 }
 
 }  // namespace cmd

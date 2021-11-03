@@ -13,16 +13,13 @@ class CachedRepository {
 
  public:
   std::string name;
-  std::string display_name;
-  std::string url;
   std::string hash;
-  std::string path;
   std::set<Package> packages;
 };
 
-class Cache {
+class CachedRepositories {
  public:
-  Cache();
+  CachedRepositories();
 
  private:
   std::set<CachedRepository*> cached_repositories;
@@ -32,9 +29,10 @@ class Cache {
   void add_repository(CachedRepository* repo);
 };
 
-Cache* load_cache(std::string path);
+//CachedRepositories* load_cached_repositories(std::string path);
 
-bool update_cache(CachedRepository* cachedRepository,
-                  repo::Repository repository);
+bool load_cached(std::string fileName, CachedRepository &cached);
+
+bool update_cache(repo::RepositoryConfig* repositoryConfig);
 
 }  // namespace cache

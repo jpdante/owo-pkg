@@ -5,6 +5,6 @@
 
 int main(int argc, char* argv[]) {
 
-  setup_cli(argc, argv);
+  owo::setup_cli(argc, argv);
 
 }

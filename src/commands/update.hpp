@@ -2,8 +2,10 @@
 
 #include <iostream>
 #include <set>
+
+#include "../cli.hpp"
 namespace cmd {
 
-void update(std::set<std::string> packages, bool verbose, bool force);
+void update(Config config, std::set<std::string> packages, bool verbose, bool force);
 
 }

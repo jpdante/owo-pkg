@@ -1,15 +1,18 @@
 #include "cli.hpp"
 
-#include <iostream>
 #include <set>
+#include <toml.hpp>
 
 #include "commands/install.hpp"
 #include "commands/remove.hpp"
 #include "commands/update.hpp"
 
+namespace owo {
+
 void setup_cli(int argc, char* argv[]) {
   enum class mode { install, update, remove, help };
 
+  Config config = load_config("../tmp/config.toml");
   mode selected = mode::help;
   std::vector<std::string> rawPackages;
   bool verbose = false;
@@ -31,18 +34,18 @@ void setup_cli(int argc, char* argv[]) {
 
   if (parse(argc, argv, cli)) {
     std::set<std::string> packages;
-    for (const auto &pkg : rawPackages) {
+    for (const auto& pkg : rawPackages) {
       packages.insert(pkg);
     }
     switch (selected) {
       case mode::install:
-        cmd::install(packages, verbose, force);
+        cmd::install(config, packages, verbose, force);
         break;
       case mode::update:
-        cmd::update(packages, verbose, force);
+        cmd::update(config, packages, verbose, force);
         break;
       case mode::remove:
-        cmd::remove(packages, verbose, force);
+        cmd::remove(config, packages, verbose, force);
         break;
       case mode::help:
         print_usage();
@@ -51,6 +54,14 @@ void setup_cli(int argc, char* argv[]) {
   } else {
     print_usage();
   }
+}
+
+Config load_config(std::string fileName) {
+  const auto data = toml::parse(fileName);
+  Config config;
+  config.repo_path = toml::find<std::string>(data, "repo_path");
+  config.cache_path = toml::find<std::string>(data, "cache_path");
+  return config;
 }
 
 void print_usage() {
@@ -64,3 +75,5 @@ void print_usage() {
   std::cout << "  remove <packages>";
   std::cout << std::endl;
 }
+
+}  // namespace cli

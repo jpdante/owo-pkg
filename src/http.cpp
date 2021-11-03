@@ -9,6 +9,7 @@
 #include <indicators/cursor_control.hpp>
 #include <indicators/progress_bar.hpp>
 #include <iostream>
+#include <sstream>
 
 HttpClient::HttpClient() {
   progressBar = new indicators::ProgressBar{
@@ -27,11 +28,40 @@ HttpClient::HttpClient() {
           std::vector<indicators::FontStyle>{indicators::FontStyle::bold}}};
 }
 
-HttpClient::~HttpClient() {
-  delete progressBar;
+HttpClient::~HttpClient() { delete progressBar; }
+
+bool HttpClient::download_string(std::string url, std::string& data) {
+  try {
+    curlpp::Cleanup myCleanup;
+    curlpp::Easy request;
+    std::ostringstream response;
+
+    indicators::show_console_cursor(false);
+
+    request.setOpt(curlpp::options::Url(url));
+    request.setOpt(curlpp::options::WriteStream(&response));
+    request.setOpt(curlpp::options::Verbose(false));
+    request.setOpt(curlpp::options::NoProgress(0));
+    request.setOpt(curlpp::options::ProgressFunction(std::bind(
+        &HttpClient::progress, this, std::placeholders::_1,
+        std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)));
+    request.perform();
+
+    data = std::string(response.str());
+
+    indicators::show_console_cursor(true);
+    return true;
+  } catch (curlpp::RuntimeError& e) {
+    indicators::show_console_cursor(true);
+    std::cout << e.what() << std::endl;
+  } catch (curlpp::LogicError& e) {
+    indicators::show_console_cursor(true);
+    std::cout << e.what() << std::endl;
+  }
+  return false;
 }
 
-bool HttpClient::downloadFile(std::string url, std::string path) {
+bool HttpClient::download_file(std::string url, std::string path) {
   try {
     curlpp::Cleanup myCleanup;
     curlpp::Easy request;
@@ -51,8 +81,7 @@ bool HttpClient::downloadFile(std::string url, std::string path) {
     request.perform();
 
     myfile.close();
-
-    std::cout << "Complete!" << std::endl;
+    
     indicators::show_console_cursor(true);
     return true;
   } catch (curlpp::RuntimeError& e) {

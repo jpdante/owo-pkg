@@ -2,16 +2,7 @@
 
 #include <iostream>
 #include <set>
-
-class Package {
- public:
-  Package();
-
- public:
-  std::string name;
-  std::string description;
-  std::set<std::string> tags;
-};
+#include <vector>
 
 class PackageDependencie {
  public:
@@ -20,7 +11,6 @@ class PackageDependencie {
  public:
   std::string name;
   std::string version;
-  std::string latest_version;
 };
 
 class PackageVersion {
@@ -35,4 +25,16 @@ class PackageVersion {
   std::string file;
   std::string hash;
   std::set<PackageDependencie> dependencies;
+};
+
+class Package {
+ public:
+  Package();
+
+ public:
+  std::string name;
+  std::string description;
+  std::set<std::string> tags;
+  std::vector<PackageVersion> versions;
+  std::string latest_version;
 };
