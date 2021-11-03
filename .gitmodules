@@ -14,3 +14,7 @@
 	path = lib/json
 	url = https://github.com/nlohmann/json.git
 	branch = v3.10.4
+[submodule "lib/toml11"]
+	path = lib/toml11
+	url = https://github.com/ToruNiina/toml11.git
+	branch = v3.7.0
