@@ -17,7 +17,7 @@ add_executable (owo
 
 # Set vars
 set(CMAKE_MODULE_PATH lib)
-set(EXTERNAL_LIB_HEADERS lib/curlpp/include lib/indicators/include lib/json/include lib/toml11)
+set(EXTERNAL_LIB_HEADERS lib/curlpp/include lib/clipp/include lib/indicators/include lib/json/include lib/toml11)
 set(OPENSSL_USE_STATIC_LIBS TRUE)
 
 # Compile curlpp

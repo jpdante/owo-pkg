@@ -1,8 +1,8 @@
-#include "install.h"
+#include "install.hpp"
 
 #include <iostream>
 
-#include "../http.h"
+#include "../http.hpp"
 
 namespace cmd {
 

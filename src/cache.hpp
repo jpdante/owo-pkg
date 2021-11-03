@@ -3,8 +3,8 @@
 #include <nlohmann/json.hpp>
 #include <set>
 
-#include "package.h"
-#include "repo.h"
+#include "package.hpp"
+#include "repo.hpp"
 
 namespace cache {
 class CachedRepository {

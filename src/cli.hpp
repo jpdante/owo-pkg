@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../lib/clipp/include/clipp.h"
+#include <clipp.h>
 
 void setup_cli(int argc, char* argv[]);
 

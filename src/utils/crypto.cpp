@@ -1,59 +1,61 @@
-#include "crypto.h"
+#include "crypto.hpp"
 
 #include <openssl/evp.h>
 #include <string.h>
+
+#include <fstream>
 
 namespace utils {
 
 namespace crypto {
 
-void sha256_string(std::string string, std::string &outputBuffer) {
-  EVP_MD_CTX *ctx = EVP_MD_CTX_new();
-  /*EVP_MD_CTX ctx;
+void sha256_string(std::string string, std::string &output) {
+  const char *strP = string.c_str();
+  unsigned char digest[EVP_MAX_MD_SIZE];
   unsigned int outLen;
-  int i;
 
-  const char *strP = string.c_str();
-  char digest[EVP_MAX_MD_SIZE];
+  EVP_MD_CTX *ctx = EVP_MD_CTX_new();
+  EVP_DigestInit(ctx, EVP_sha256());
+  EVP_DigestUpdate(ctx, strP, strlen(strP));
+  EVP_DigestFinal(ctx, digest, &outLen);
+  EVP_MD_CTX_destroy(ctx);
 
-  EVP_DigestInit(&ctx, EVP_sha256());
-  EVP_DigestUpdate(&ctx, strP, strlen(strP));
-  EVP_DigestFinal(&ctx, digest, &outLen);*/
-
-  /*unsigned char hash[SHA256_DIGEST_LENGTH];
-  SHA256_CTX sha256;
-  SHA256_Init(&sha256);
-  const char *strP = string.c_str();
-  SHA256_Update(&sha256, strP, strlen(strP));
-  SHA256_Final(hash, &sha256);
-  int i = 0;
-  char buff[65];
-  for (i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-    sprintf(buff + (i * 2), "%02x", hash[i]);
+  char hash[EVP_MAX_MD_SIZE];
+  for (int i = 0; i < outLen; i++) {
+    sprintf(hash + (i * 2), "%02x", digest[i]);
   }
-  outputBuffer[64] = 0;
-  outputBuffer = std::string(buff);*/
+  output[64] = 0;
+  output = std::string(hash);
 }
 
-int sha256_file(std::string path, std::string &outputBuffer) {
-  /*FILE *file = fopen(path, "rb");
-  if (!file) return -534;
+bool sha256_file(std::string path, std::string &output) {
+  unsigned char digest[EVP_MAX_MD_SIZE];
+  unsigned int outLen;
 
-  unsigned char hash[SHA256_DIGEST_LENGTH];
-  SHA256_CTX sha256;
-  SHA256_Init(&sha256);
+  std::fstream file;
+  file.open(path, std::ios::in | std::ios::binary);
+  if (!file.is_open()) return false;
+
+  EVP_MD_CTX *ctx = EVP_MD_CTX_new();
+  EVP_DigestInit(ctx, EVP_sha256());
   const int bufSize = 32768;
-  unsigned char *buffer = malloc(bufSize);
   int bytesRead = 0;
-  if (!buffer) return ENOMEM;
-  while ((bytesRead = fread(buffer, 1, bufSize, file))) {
-    SHA256_Update(&sha256, buffer, bytesRead);
+  while (!file.eof() && file.is_open()) {
+    char buffer[bufSize];
+    file.read(buffer, bufSize);
+    EVP_DigestUpdate(ctx, buffer, file.gcount());
   }
-  SHA256_Final(hash, &sha256);
+  EVP_DigestFinal(ctx, digest, &outLen);
+  EVP_MD_CTX_destroy(ctx);
 
-  sha256_hash_string(hash, outputBuffer);
-  fclose(file);
-  free(buffer);*/
+  file.close();
+
+  char hash[EVP_MAX_MD_SIZE];
+  for (int i = 0; i < outLen; i++) {
+    sprintf(hash + (i * 2), "%02x", digest[i]);
+  }
+  output[64] = 0;
+  output = std::string(hash);
   return 0;
 }
 

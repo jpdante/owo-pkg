@@ -1,7 +1,7 @@
-#include "owo-pkg.h"
+#include "owo-pkg.hpp"
 
 #include <string>
-#include "cli.h"
+#include "cli.hpp"
 
 int main(int argc, char* argv[]) {
 

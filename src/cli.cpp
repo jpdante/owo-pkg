@@ -1,11 +1,11 @@
-#include "cli.h"
+#include "cli.hpp"
 
 #include <iostream>
 #include <set>
 
-#include "commands/install.h"
-#include "commands/remove.h"
-#include "commands/update.h"
+#include "commands/install.hpp"
+#include "commands/remove.hpp"
+#include "commands/update.hpp"
 
 void setup_cli(int argc, char* argv[]) {
   enum class mode { install, update, remove, help };
