@@ -3,10 +3,11 @@
 #include <iostream>
 #include <set>
 #include <vector>
+#include <nlohmann/json.hpp>
 
 class PackageDependencie {
  public:
-  PackageDependencie();
+  PackageDependencie(nlohmann::json value);
 
  public:
   std::string name;
@@ -15,7 +16,7 @@ class PackageDependencie {
 
 class PackageVersion {
  public:
-  PackageVersion();
+  PackageVersion(nlohmann::json value);
 
  public:
   std::string version;
@@ -29,7 +30,7 @@ class PackageVersion {
 
 class Package {
  public:
-  Package();
+  Package(nlohmann::json value);
 
  public:
   std::string name;

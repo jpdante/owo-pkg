@@ -15,7 +15,7 @@ void update(Config config, std::set<std::string> packages, bool verbose,
   std::filesystem::path cachePath(config.cache_path);
 
   std::vector<repo::RepositoryConfig*> repos =
-      repo::load_repositories(repoConfigPath);
+      repo::load_repositories_configs(repoConfigPath);
   for (repo::RepositoryConfig* repoConfig : repos) {
     if (repo::check_update(repoConfig, cachePath)) {
       if (!repo::update_repository(repoConfig, cachePath)) {
@@ -31,8 +31,6 @@ void update(Config config, std::set<std::string> packages, bool verbose,
   } else {
     // Update all
   }
-  std::cout << "" << std::endl;
-  std::cout << verbose << std::endl;
 }
 
 }  // namespace cmd

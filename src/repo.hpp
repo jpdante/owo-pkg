@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <iostream>
+#include <nlohmann/json.hpp>
 #include <set>
 #include <vector>
 
@@ -22,11 +23,37 @@ class RepositoryConfig {
   bool support_compression;
 };
 
-RepositoryConfig* read_repository(std::filesystem::path filePath);
+class CachedRepository {
+ public:
+  CachedRepository(RepositoryConfig* config, nlohmann::json value);
 
-std::vector<RepositoryConfig*> load_repositories(std::filesystem::path dirPath);
+ public:
+  RepositoryConfig* config;
+  std::set<Package> packages;
+};
 
-bool check_update(RepositoryConfig* repository, std::filesystem::path cachePath);
+class CachedRepositories {
+ public:
+  CachedRepositories();
+
+ private:
+  std::set<CachedRepository*> cached_repositories;
+
+ public:
+  std::set<Package*> search(std::string value);
+  void add_repository(CachedRepository* repo);
+};
+
+RepositoryConfig* read_repository_config(std::filesystem::path filePath);
+
+std::vector<RepositoryConfig*> load_repositories_configs(
+    std::filesystem::path dirPath);
+
+bool load_repository(RepositoryConfig* repoConfig,
+                     std::filesystem::path cachePath, CachedRepository& cached);
+
+bool check_update(RepositoryConfig* repository,
+                  std::filesystem::path cachePath);
 
 bool update_repository(RepositoryConfig* repository,
                        std::filesystem::path cache_path);

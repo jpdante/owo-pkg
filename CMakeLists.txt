@@ -6,7 +6,6 @@ add_executable (owo
 "src/owo-pkg.cpp"
 "src/cli.cpp"
 "src/http.cpp"
-"src/cache.cpp"
 "src/repo.cpp"
 "src/package.cpp"
 "src/utils/crypto.cpp"

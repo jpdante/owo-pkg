@@ -10,6 +10,8 @@
 
 namespace repo {
 
+// RepositoryConfig
+
 RepositoryConfig::RepositoryConfig() {
   this->name = "";
   this->display_name = "";
@@ -19,7 +21,45 @@ RepositoryConfig::RepositoryConfig() {
   this->support_compression = false;
 }
 
-RepositoryConfig* read_repository(std::filesystem::path filePath) {
+// End RepositoryConfig
+
+// CachedRepository
+
+CachedRepository::CachedRepository(RepositoryConfig* config,
+                                   nlohmann::json value) {
+  this->config = config;
+}
+
+// End CachedRepository
+
+// CachedRepositories
+
+CachedRepositories::CachedRepositories() {}
+
+void CachedRepositories::add_repository(CachedRepository* repo) {
+  this->cached_repositories.insert(repo);
+}
+
+std::set<Package*> CachedRepositories::search(std::string name) {
+  std::set<Package*> packages;
+  for (const auto& repo : this->cached_repositories) {
+    for (auto package : repo->packages) {
+      if (package.name.find(name) != std::string::npos) {
+        packages.insert(&package);
+        continue;
+      }
+      if (package.tags.find(name) != package.tags.end()) {
+        packages.insert(&package);
+        continue;
+      }
+    }
+  }
+  return packages;
+}
+
+// End CachedRepositories
+
+RepositoryConfig* read_repository_config(std::filesystem::path filePath) {
   const auto data = toml::parse(filePath);
   if (!data.contains("name")) return nullptr;
   if (!data.contains("url")) return nullptr;
@@ -41,7 +81,7 @@ RepositoryConfig* read_repository(std::filesystem::path filePath) {
   return repository;
 };
 
-std::vector<RepositoryConfig*> load_repositories(
+std::vector<RepositoryConfig*> load_repositories_configs(
     std::filesystem::path dirPath) {
   std::vector<RepositoryConfig*> repositories;
 
@@ -49,12 +89,27 @@ std::vector<RepositoryConfig*> load_repositories(
     if (!entry.is_regular_file()) continue;
     std::filesystem::path entryPath = entry.path();
 
-    RepositoryConfig* config = read_repository(entryPath);
+    RepositoryConfig* config = read_repository_config(entryPath);
     if (config == nullptr) continue;
 
     repositories.push_back(config);
   }
   return repositories;
+}
+
+bool load_repository(RepositoryConfig* repoConfig,
+                     std::filesystem::path cachePath,
+                     CachedRepository& cached) {
+  std::filesystem::path repoCachePath =
+      cachePath / std::filesystem::path(repoConfig->config_fileName + ".rpi");
+  if (!std::filesystem::exists(repoCachePath)) return false;
+  nlohmann::json value;
+  std::fstream cacheFile;
+  cacheFile.open(repoCachePath, std::ios::in);
+  cacheFile >> value;
+  cacheFile.close();
+  cached = *new CachedRepository(repoConfig, value["packages"]);
+  return true;
 }
 
 bool check_update(RepositoryConfig* repoConfig,
@@ -64,7 +119,7 @@ bool check_update(RepositoryConfig* repoConfig,
       cachePath / std::filesystem::path(repoConfig->config_fileName + ".rpi");
   std::string localHash;
   std::string remoteHash;
-    std::cout << "Checking repository " << repoConfig->display_name << " ("
+  std::cout << "Checking repository " << repoConfig->display_name << " ("
             << repoConfig->name << ")..." << std::endl;
 
   if (std::filesystem::exists(repoCachePath)) {
@@ -151,8 +206,8 @@ bool update_repository(RepositoryConfig* repoConfig,
   if (client.download_file(url, fileName)) {
     return true;
   } else {
-  std::cout << "Failed to download repository " << repoConfig->display_name << " ("
-            << repoConfig->name << ") at " << url << std::endl;
+    std::cout << "Failed to download repository " << repoConfig->display_name
+              << " (" << repoConfig->name << ") at " << url << std::endl;
     if (std::filesystem::exists(fileName)) std::filesystem::remove(fileName);
   }
   return false;
