@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include <iostream>
 #include <set>
 #include <vector>
@@ -10,23 +11,24 @@ namespace repo {
 
 class RepositoryConfig {
  public:
-  RepositoryConfig(std::string name, std::string display_name, std::string url);
+  RepositoryConfig();
 
  public:
   std::string name;
   std::string display_name;
   std::string url;
-  std::string path;
+  std::string config_path;
+  std::string config_fileName;
+  bool support_compression;
 };
 
-RepositoryConfig* read_repository(std::string file);
+RepositoryConfig* read_repository(std::filesystem::path filePath);
 
-std::vector<RepositoryConfig*> load_repositories(std::string path);
+std::vector<RepositoryConfig*> load_repositories(std::filesystem::path dirPath);
 
-bool check_update(RepositoryConfig* repository);
+bool check_update(RepositoryConfig* repository, std::filesystem::path cachePath);
 
-bool update_repository(RepositoryConfig* repository, std::string cache_path);
-
-bool save_repository(RepositoryConfig* repository, std::string file);
+bool update_repository(RepositoryConfig* repository,
+                       std::filesystem::path cache_path);
 
 }  // namespace repo

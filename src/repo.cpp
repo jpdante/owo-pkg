@@ -1,23 +1,26 @@
 #include "repo.hpp"
 
-#include <filesystem>
+#include <zlib.h>
+
 #include <fstream>
 #include <toml.hpp>
 
 #include "http.hpp"
+#include "utils/crypto.hpp"
 
 namespace repo {
 
-RepositoryConfig::RepositoryConfig(std::string name, std::string display_name,
-                                   std::string url) {
-  this->name = name;
-  this->display_name = display_name;
-  this->url = url;
-  this->path = "";
+RepositoryConfig::RepositoryConfig() {
+  this->name = "";
+  this->display_name = "";
+  this->url = "";
+  this->config_path = "";
+  this->config_fileName = "";
+  this->support_compression = false;
 }
 
-RepositoryConfig* read_repository(std::string file) {
-  const auto data = toml::parse(file);
+RepositoryConfig* read_repository(std::filesystem::path filePath) {
+  const auto data = toml::parse(filePath);
   if (!data.contains("name")) return nullptr;
   if (!data.contains("url")) return nullptr;
 
@@ -25,16 +28,24 @@ RepositoryConfig* read_repository(std::string file) {
   std::string display_name =
       toml::find_or<std::string>(data, "display_name", name);
   std::string url = toml::find<std::string>(data, "url");
+  bool support_compression =
+      toml::find_or<bool>(data, "support_compression", false);
 
-  RepositoryConfig* repo = new RepositoryConfig(name, display_name, url);
-  repo->path = file;
-  return repo;
+  RepositoryConfig* repository = new RepositoryConfig();
+  repository->name = name;
+  repository->display_name = display_name;
+  repository->url = url;
+  repository->config_path = filePath;
+  repository->config_fileName = filePath.filename();
+  repository->support_compression = support_compression;
+  return repository;
 };
 
-std::vector<RepositoryConfig*> load_repositories(std::string path) {
+std::vector<RepositoryConfig*> load_repositories(
+    std::filesystem::path dirPath) {
   std::vector<RepositoryConfig*> repositories;
 
-  for (const auto& entry : std::filesystem::directory_iterator(path)) {
+  for (const auto& entry : std::filesystem::directory_iterator(dirPath)) {
     if (!entry.is_regular_file()) continue;
     std::filesystem::path entryPath = entry.path();
 
@@ -46,34 +57,105 @@ std::vector<RepositoryConfig*> load_repositories(std::string path) {
   return repositories;
 }
 
-bool check_update(RepositoryConfig* repository) {
-  HttpClient client;
-  std::string hash;
-  if (client.download_string(repository->url, hash)) {
+bool check_update(RepositoryConfig* repoConfig,
+                  std::filesystem::path cachePath) {
+  std::string url = repoConfig->url + "packages/packages.sha256";
+  std::filesystem::path repoCachePath =
+      cachePath / std::filesystem::path(repoConfig->config_fileName + ".rpi");
+  std::string localHash;
+  std::string remoteHash;
+    std::cout << "Checking repository " << repoConfig->display_name << " ("
+            << repoConfig->name << ")..." << std::endl;
+
+  if (std::filesystem::exists(repoCachePath)) {
+    utils::crypto::sha256_file(repoCachePath, localHash);
+  } else {
+    std::cout << "Repository " << repoConfig->display_name << " ("
+              << repoConfig->name << ") cache not found." << std::endl;
     return true;
   }
-  std::cout << "Failed to check repository '" << repository->display_name
-            << "' at " << repository->url << std::endl;
+
+  HttpClient client;
+  if (client.download_string(url, remoteHash)) {
+    std::cout << "Repository " << repoConfig->display_name << " ("
+              << repoConfig->name << ") local hash: " << localHash << std::endl;
+    std::cout << "Repository " << repoConfig->display_name << " ("
+              << repoConfig->name << ") remote hash: " << remoteHash
+              << std::endl;
+    return localHash != remoteHash;
+  }
+  std::cout << "Failed to check repository " << repoConfig->display_name << " ("
+            << repoConfig->name << ") at " << repoConfig->url << std::endl;
   return false;
 }
 
-bool update_repository(RepositoryConfig* repository, std::string cache_path) {
+bool update_repository(RepositoryConfig* repoConfig,
+                       std::filesystem::path cachePath) {
   HttpClient client;
-  std::string url = repository->url + "packages/packages.json";
-  std::string fileName = cache_path + "/" + repository->name + ".cr";
-  std::cout << "Downloading repository " << repository->display_name << " (" << repository->name << ") at " << url << std::endl;
-  return client.download_file(url, fileName);
-}
-
-bool save_repository(RepositoryConfig* repository, std::string file) {
-  /*nlohmann::json repoData;
-    repoData["name"] = repository->name;
-    repoData["url"] = repository->url;
-    std::fstream stream;
-    stream.open(file, std::ios::out | std::ios::trunc);
-    stream << repoData;
-    stream.close();*/
-  return true;
+  std::string url;
+  std::filesystem::path fileName;
+  if (repoConfig->support_compression) {
+    url = repoConfig->url + "packages/packages.json.gz";
+    fileName = cachePath / std::filesystem::path(repoConfig->name + ".rpi.gz");
+    if (std::filesystem::exists(fileName)) std::filesystem::remove(fileName);
+    std::cout << "Downloading repository " << repoConfig->display_name << " ("
+              << repoConfig->name << ") at " << url << std::endl;
+    if (client.download_file(url, fileName)) {
+      gzFile compressedFile = gzopen(fileName.c_str(), "rb");
+      std::fstream uncompressedFile;
+      std::filesystem::path uncompressedFileName =
+          cachePath /
+          std::filesystem::path(repoConfig->config_fileName + ".rpi");
+      if (std::filesystem::exists(uncompressedFileName))
+        std::filesystem::remove(uncompressedFileName);
+      uncompressedFile.open(uncompressedFileName,
+                            std::ios::out | std::ios::binary | std::ios::trunc);
+      try {
+        if (compressedFile && uncompressedFile.is_open()) {
+          char buffer[128];
+          int num_read = 0;
+          while ((num_read = gzread(compressedFile, buffer, sizeof(buffer))) >
+                 0) {
+            uncompressedFile.write(buffer, num_read);
+          }
+          gzclose(compressedFile);
+          uncompressedFile.close();
+          if (std::filesystem::exists(fileName))
+            std::filesystem::remove(fileName);
+          return true;
+        }
+      } catch (...) {
+        std::cout << "Failed to decompress file, going to fallback."
+                  << std::endl;
+      }
+      gzclose(compressedFile);
+      uncompressedFile.close();
+      try {
+        if (std::filesystem::exists(uncompressedFileName))
+          std::filesystem::remove(uncompressedFileName);
+      } catch (...) {
+        std::cout << "Failed to delete cache files." << std::endl;
+        std::cout << "File: " << fileName << std::endl;
+        std::cout << "File: " << uncompressedFileName << std::endl;
+      }
+    } else {
+      std::cout << "Failed to download, going to fallback." << std::endl;
+      if (std::filesystem::exists(fileName)) std::filesystem::remove(fileName);
+    }
+  }
+  url = repoConfig->url + "packages/packages.json";
+  fileName = cachePath / std::filesystem::path(repoConfig->name + ".rpi");
+  if (std::filesystem::exists(fileName)) std::filesystem::remove(fileName);
+  std::cout << "Downloading repository " << repoConfig->display_name << " ("
+            << repoConfig->name << ") at " << url << std::endl;
+  if (client.download_file(url, fileName)) {
+    return true;
+  } else {
+  std::cout << "Failed to download repository " << repoConfig->display_name << " ("
+            << repoConfig->name << ") at " << url << std::endl;
+    if (std::filesystem::exists(fileName)) std::filesystem::remove(fileName);
+  }
+  return false;
 }
 
 }  // namespace repo

@@ -3,6 +3,7 @@
 #include <math.h>
 
 #include <curlpp/Easy.hpp>
+#include <curlpp/Infos.hpp>
 #include <curlpp/Options.hpp>
 #include <curlpp/cURLpp.hpp>
 #include <fstream>
@@ -20,7 +21,7 @@ HttpClient::HttpClient() {
       indicators::option::Remainder{"-"},
       indicators::option::End{"]"},
       indicators::option::PrefixText{"Downloading"},
-      indicators::option::ForegroundColor{indicators::Color::grey},
+      indicators::option::ForegroundColor{indicators::Color::green},
       indicators::option::ShowElapsedTime{true},
       indicators::option::ShowRemainingTime{true},
       indicators::option::ShowPercentage{true},
@@ -50,7 +51,7 @@ bool HttpClient::download_string(std::string url, std::string& data) {
     data = std::string(response.str());
 
     indicators::show_console_cursor(true);
-    return true;
+    return curlpp::infos::ResponseCode::get(request) == 200;
   } catch (curlpp::RuntimeError& e) {
     indicators::show_console_cursor(true);
     std::cout << e.what() << std::endl;
@@ -66,8 +67,8 @@ bool HttpClient::download_file(std::string url, std::string path) {
     curlpp::Cleanup myCleanup;
     curlpp::Easy request;
     std::fstream myfile;
-    myfile.open(path, std::ios::in | std::ios::out | std::ios::binary |
-                          std::ios::trunc);
+    myfile.open(
+        path, std::ios::in | std::ios::out | std::ios::binary | std::ios::app);
 
     indicators::show_console_cursor(false);
 
@@ -79,11 +80,9 @@ bool HttpClient::download_file(std::string url, std::string path) {
         &HttpClient::progress, this, std::placeholders::_1,
         std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)));
     request.perform();
-
     myfile.close();
-    
     indicators::show_console_cursor(true);
-    return true;
+    return curlpp::infos::ResponseCode::get(request) == 200;
   } catch (curlpp::RuntimeError& e) {
     indicators::show_console_cursor(true);
     std::cout << e.what() << std::endl;
@@ -99,7 +98,7 @@ double HttpClient::progress(double dltotal, double dlnow, double ultotal,
   if (dltotal == 0 && dlnow == 0) return 0;
   double progress = (dlnow / dltotal) * 100;
   int percent = floorf(progress * 100) / 100;
-  // std::cout << percent << "%" << std::endl;
+  if (percent < 0 || percent > 100) return 0;
   if (progressBar->current() == percent) return 0;
   progressBar->set_progress((int)percent);
   return 0;

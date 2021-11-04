@@ -18,3 +18,7 @@
 	path = lib/toml11
 	url = https://github.com/ToruNiina/toml11.git
 	branch = v3.7.0
+[submodule "lib/zlib"]
+	path = lib/zlib
+	url = https://github.com/madler/zlib.git
+	branch = v1.2.11

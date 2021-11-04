@@ -1,5 +1,6 @@
 #include "update.hpp"
 
+#include <filesystem>
 #include <iostream>
 #include <vector>
 
@@ -10,9 +11,19 @@ namespace cmd {
 
 void update(Config config, std::set<std::string> packages, bool verbose,
             bool force) {
-  std::vector<repo::RepositoryConfig*> repos = repo::load_repositories(config.repo_path);
-  for (repo::RepositoryConfig* repo : repos) {
-    repo::update_repository(repo, config.cache_path);
+  std::filesystem::path repoConfigPath(config.repo_path);
+  std::filesystem::path cachePath(config.cache_path);
+
+  std::vector<repo::RepositoryConfig*> repos =
+      repo::load_repositories(repoConfigPath);
+  for (repo::RepositoryConfig* repoConfig : repos) {
+    if (repo::check_update(repoConfig, cachePath)) {
+      if (!repo::update_repository(repoConfig, cachePath)) {
+        std::cout << "Failed to update repository " << repoConfig->display_name
+                  << " (" << repoConfig->name << ") at " << repoConfig->url
+                  << std::endl;
+      }
+    }
   }
 
   if (packages.size() > 0) {
