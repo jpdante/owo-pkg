@@ -5,12 +5,13 @@
 
 #include "commands/install.hpp"
 #include "commands/remove.hpp"
+#include "commands/search.hpp"
 #include "commands/update.hpp"
 
 namespace owo {
 
 void setup_cli(int argc, char* argv[]) {
-  enum class mode { install, update, remove, help };
+  enum class mode { install, update, search, remove, help };
 
   Config config = load_config("../tmp/config.toml");
   mode selected = mode::help;
@@ -24,10 +25,13 @@ void setup_cli(int argc, char* argv[]) {
   auto updateMode = (clipp::command("update").set(selected, mode::update),
                      clipp::opt_values("packages", rawPackages));
 
+  auto searchMode = (clipp::command("search").set(selected, mode::search),
+                     clipp::opt_values("packages", rawPackages));
+
   auto removeMode = (clipp::command("remove").set(selected, mode::remove),
                      clipp::values("packages", rawPackages));
 
-  auto cli = (installMode | updateMode | removeMode |
+  auto cli = (installMode | updateMode | searchMode | removeMode |
                   clipp::command("help").set(selected, mode::help),
               clipp::option("--verbose", "-v").set(verbose, true),
               clipp::option("--force", "-f").set(force, true));
@@ -43,6 +47,9 @@ void setup_cli(int argc, char* argv[]) {
         break;
       case mode::update:
         cmd::update(config, packages, verbose, force);
+        break;
+      case mode::search:
+        cmd::search(config, packages, verbose, force);
         break;
       case mode::remove:
         cmd::remove(config, packages, verbose, force);
@@ -72,8 +79,9 @@ void print_usage() {
   std::cout << "Commands:\n";
   std::cout << "  install <packages>\n";
   std::cout << "  update <packages>\n";
+  std::cout << "  search <packages>\n";
   std::cout << "  remove <packages>";
   std::cout << std::endl;
 }
 
-}  // namespace cli
+}  // namespace owo

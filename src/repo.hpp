@@ -30,7 +30,7 @@ class CachedRepository {
 
  public:
   RepositoryConfig* config;
-  std::set<Package> packages;
+  std::set<Package*> packages;
 };
 
 class CachedRepositories {

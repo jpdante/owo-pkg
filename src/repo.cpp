@@ -28,6 +28,15 @@ RepositoryConfig::RepositoryConfig() {
 CachedRepository::CachedRepository(RepositoryConfig* config,
                                    nlohmann::json value) {
   this->config = config;
+  if (!value.contains("packages"))
+    throw std::runtime_error("Json field 'packages' not found.");
+  if (!value["packages"].is_array())
+    throw std::runtime_error(
+        "Json field 'packages' invalid type, expected type object array.");
+  nlohmann::json pkgs = value["packages"];
+  for (nlohmann::json::iterator it = pkgs.begin(); it != pkgs.end(); ++it) {
+    this->packages.insert(new Package(config->name, *it));
+  }
 }
 
 // End CachedRepository
@@ -41,20 +50,20 @@ void CachedRepositories::add_repository(CachedRepository* repo) {
 }
 
 std::set<Package*> CachedRepositories::search(std::string name) {
-  std::set<Package*> packages;
-  for (const auto& repo : this->cached_repositories) {
-    for (auto package : repo->packages) {
-      if (package.name.find(name) != std::string::npos) {
-        packages.insert(&package);
+  std::set<Package*> results;
+  for (const CachedRepository* repo : this->cached_repositories) {
+    for (Package* package : repo->packages) {
+      if (package->name.find(name) != std::string::npos) {
+        results.insert(package);
         continue;
       }
-      if (package.tags.find(name) != package.tags.end()) {
-        packages.insert(&package);
+      if (package->tags.find(name) != package->tags.end()) {
+        results.insert(package);
         continue;
       }
     }
   }
-  return packages;
+  return results;
 }
 
 // End CachedRepositories
@@ -111,7 +120,7 @@ bool load_repository(RepositoryConfig* repoConfig,
   cacheFile.open(repoCachePath, std::ios::in);
   cacheFile >> value;
   cacheFile.close();
-  *cached = new CachedRepository(repoConfig, value["packages"]);
+  *cached = new CachedRepository(repoConfig, value);
   return true;
 }
 
@@ -135,13 +144,11 @@ bool check_update(RepositoryConfig* repoConfig, std::filesystem::path cachePath,
   HttpClient client;
   if (client.download_string(url, remoteHash)) {
     if (verbose)
-      std::cout << repoConfig->display_name << " ("
-                << repoConfig->name << ") local hash: " << localHash
-                << std::endl;
+      std::cout << repoConfig->display_name << " (" << repoConfig->name
+                << ") local hash: " << localHash << std::endl;
     if (verbose)
-      std::cout << repoConfig->display_name << " ("
-                << repoConfig->name << ") remote hash: " << remoteHash
-                << std::endl;
+      std::cout << repoConfig->display_name << " (" << repoConfig->name
+                << ") remote hash: " << remoteHash << std::endl;
     return localHash != remoteHash;
   }
   std::cout << "Failed to check repository " << repoConfig->display_name << " ("

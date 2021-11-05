@@ -30,9 +30,10 @@ class PackageVersion {
 
 class Package {
  public:
-  Package(nlohmann::json value);
+  Package(std::string repository, nlohmann::json value);
 
  public:
+  std::string repository;
   std::string name;
   std::string description;
   std::set<std::string> tags;

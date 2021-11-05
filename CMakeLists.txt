@@ -11,6 +11,7 @@ add_executable (owo
 "src/utils/crypto.cpp"
 "src/commands/install.cpp"
 "src/commands/remove.cpp"
+"src/commands/search.cpp"
 "src/commands/update.cpp"
 )
 
