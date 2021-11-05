@@ -12,24 +12,30 @@
 #include <iostream>
 #include <sstream>
 
-HttpClient::HttpClient() {
-  progressBar = new indicators::ProgressBar{
-      indicators::option::BarWidth{50},
-      indicators::option::Start{" ["},
-      indicators::option::Fill{"█"},
-      indicators::option::Lead{"█"},
-      indicators::option::Remainder{"-"},
-      indicators::option::End{"]"},
-      indicators::option::PrefixText{"Downloading"},
-      indicators::option::ForegroundColor{indicators::Color::green},
-      indicators::option::ShowElapsedTime{true},
-      indicators::option::ShowRemainingTime{true},
-      indicators::option::ShowPercentage{true},
-      indicators::option::FontStyles{
-          std::vector<indicators::FontStyle>{indicators::FontStyle::bold}}};
+HttpClient::HttpClient(bool showProgressBar) {
+  if (showProgressBar) {
+    progressBar = new indicators::ProgressBar{
+        indicators::option::BarWidth{50},
+        indicators::option::Start{" ["},
+        indicators::option::Fill{"█"},
+        indicators::option::Lead{"█"},
+        indicators::option::Remainder{"-"},
+        indicators::option::End{"]"},
+        indicators::option::PrefixText{"Downloading"},
+        indicators::option::ForegroundColor{indicators::Color::green},
+        indicators::option::ShowElapsedTime{true},
+        indicators::option::ShowRemainingTime{true},
+        indicators::option::ShowPercentage{true},
+        indicators::option::FontStyles{
+            std::vector<indicators::FontStyle>{indicators::FontStyle::bold}}};
+  } else {
+    progressBar = nullptr;
+  }
 }
 
-HttpClient::~HttpClient() { delete progressBar; }
+HttpClient::~HttpClient() {
+  if (progressBar != nullptr) delete progressBar;
+}
 
 bool HttpClient::download_string(std::string url, std::string& data) {
   try {
@@ -95,6 +101,7 @@ bool HttpClient::download_file(std::string url, std::string path) {
 
 double HttpClient::progress(double dltotal, double dlnow, double ultotal,
                             double ulnow) {
+  if (progressBar == nullptr) return 0;
   if (dltotal == 0 && dlnow == 0) return 0;
   double progress = (dlnow / dltotal) * 100;
   int percent = floorf(progress * 100) / 100;

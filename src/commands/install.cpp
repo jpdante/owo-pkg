@@ -13,14 +13,22 @@ void install(Config config, std::set<std::string> packages, bool verbose,
 
   std::vector<repo::RepositoryConfig*> repos =
       repo::load_repositories_configs(repoConfigPath);
-  
-  repo::CachedRepositories cachedRepositories;
-  for (repo::RepositoryConfig* repoConfig : repos) {
-    repo::CachedRepository cachedRepository;
-    if (repo::load_repository(repos, cachePath, cachedRepository)) {
 
+  std::cout << "Reading repositories..." << std::endl;
+  repo::CachedRepositories cachedRepositories;
+  int count = 0;
+  for (repo::RepositoryConfig* repoConfig : repos) {
+    count++;
+    if (verbose)
+      std::cout << "Reading:" << count << " " << repoConfig->display_name << " (" << repoConfig->name << ")... "
+                << std::flush;
+    repo::CachedRepository* cachedRepository;
+    if (repo::load_repository(repoConfig, cachePath, &cachedRepository)) {
+      cachedRepositories.add_repository(cachedRepository);
+      if (verbose) std::cout << "Ok" << std::endl;
+    } else {
+      if (verbose) std::cout << "Failed" << std::endl;
     }
-  cachedRepositories.add_repository
   }
 }
 

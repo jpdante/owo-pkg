@@ -4,7 +4,7 @@
 
 class HttpClient {
  public:
-  HttpClient();
+  HttpClient(bool showProgressBar = false);
   ~HttpClient();
 
  private:

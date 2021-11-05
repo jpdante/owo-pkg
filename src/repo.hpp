@@ -15,6 +15,7 @@ class RepositoryConfig {
   RepositoryConfig();
 
  public:
+  int id;
   std::string name;
   std::string display_name;
   std::string url;
@@ -50,10 +51,11 @@ std::vector<RepositoryConfig*> load_repositories_configs(
     std::filesystem::path dirPath);
 
 bool load_repository(RepositoryConfig* repoConfig,
-                     std::filesystem::path cachePath, CachedRepository& cached);
+                     std::filesystem::path cachePath,
+                     CachedRepository** cached);
 
-bool check_update(RepositoryConfig* repository,
-                  std::filesystem::path cachePath);
+bool check_update(RepositoryConfig* repository, std::filesystem::path cachePath,
+                  bool verbose);
 
 bool update_repository(RepositoryConfig* repository,
                        std::filesystem::path cache_path);

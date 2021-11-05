@@ -85,12 +85,15 @@ std::vector<RepositoryConfig*> load_repositories_configs(
     std::filesystem::path dirPath) {
   std::vector<RepositoryConfig*> repositories;
 
+  int count = 0;
   for (const auto& entry : std::filesystem::directory_iterator(dirPath)) {
     if (!entry.is_regular_file()) continue;
     std::filesystem::path entryPath = entry.path();
 
     RepositoryConfig* config = read_repository_config(entryPath);
     if (config == nullptr) continue;
+    count++;
+    config->id = count;
 
     repositories.push_back(config);
   }
@@ -99,7 +102,7 @@ std::vector<RepositoryConfig*> load_repositories_configs(
 
 bool load_repository(RepositoryConfig* repoConfig,
                      std::filesystem::path cachePath,
-                     CachedRepository& cached) {
+                     CachedRepository** cached) {
   std::filesystem::path repoCachePath =
       cachePath / std::filesystem::path(repoConfig->config_fileName + ".rpi");
   if (!std::filesystem::exists(repoCachePath)) return false;
@@ -108,35 +111,37 @@ bool load_repository(RepositoryConfig* repoConfig,
   cacheFile.open(repoCachePath, std::ios::in);
   cacheFile >> value;
   cacheFile.close();
-  cached = *new CachedRepository(repoConfig, value["packages"]);
+  *cached = new CachedRepository(repoConfig, value["packages"]);
   return true;
 }
 
-bool check_update(RepositoryConfig* repoConfig,
-                  std::filesystem::path cachePath) {
+bool check_update(RepositoryConfig* repoConfig, std::filesystem::path cachePath,
+                  bool verbose) {
   std::string url = repoConfig->url + "packages/packages.sha256";
   std::filesystem::path repoCachePath =
       cachePath / std::filesystem::path(repoConfig->config_fileName + ".rpi");
   std::string localHash;
   std::string remoteHash;
-  std::cout << "Checking repository " << repoConfig->display_name << " ("
-            << repoConfig->name << ")..." << std::endl;
 
   if (std::filesystem::exists(repoCachePath)) {
     utils::crypto::sha256_file(repoCachePath, localHash);
   } else {
-    std::cout << "Repository " << repoConfig->display_name << " ("
-              << repoConfig->name << ") cache not found." << std::endl;
+    if (verbose)
+      std::cout << "Repository " << repoConfig->display_name << " ("
+                << repoConfig->name << ") cache not found." << std::endl;
     return true;
   }
 
   HttpClient client;
   if (client.download_string(url, remoteHash)) {
-    std::cout << "Repository " << repoConfig->display_name << " ("
-              << repoConfig->name << ") local hash: " << localHash << std::endl;
-    std::cout << "Repository " << repoConfig->display_name << " ("
-              << repoConfig->name << ") remote hash: " << remoteHash
-              << std::endl;
+    if (verbose)
+      std::cout << repoConfig->display_name << " ("
+                << repoConfig->name << ") local hash: " << localHash
+                << std::endl;
+    if (verbose)
+      std::cout << repoConfig->display_name << " ("
+                << repoConfig->name << ") remote hash: " << remoteHash
+                << std::endl;
     return localHash != remoteHash;
   }
   std::cout << "Failed to check repository " << repoConfig->display_name << " ("
@@ -146,15 +151,16 @@ bool check_update(RepositoryConfig* repoConfig,
 
 bool update_repository(RepositoryConfig* repoConfig,
                        std::filesystem::path cachePath) {
-  HttpClient client;
+  HttpClient client(true);
   std::string url;
   std::filesystem::path fileName;
   if (repoConfig->support_compression) {
     url = repoConfig->url + "packages/packages.json.gz";
     fileName = cachePath / std::filesystem::path(repoConfig->name + ".rpi.gz");
     if (std::filesystem::exists(fileName)) std::filesystem::remove(fileName);
-    std::cout << "Downloading repository " << repoConfig->display_name << " ("
-              << repoConfig->name << ") at " << url << std::endl;
+    std::cout << "Downloading:" << repoConfig->id << " "
+              << repoConfig->display_name << " (" << repoConfig->name << ") at "
+              << url << std::endl;
     if (client.download_file(url, fileName)) {
       gzFile compressedFile = gzopen(fileName.c_str(), "rb");
       std::fstream uncompressedFile;
@@ -201,8 +207,9 @@ bool update_repository(RepositoryConfig* repoConfig,
   url = repoConfig->url + "packages/packages.json";
   fileName = cachePath / std::filesystem::path(repoConfig->name + ".rpi");
   if (std::filesystem::exists(fileName)) std::filesystem::remove(fileName);
-  std::cout << "Downloading repository " << repoConfig->display_name << " ("
-            << repoConfig->name << ") at " << url << std::endl;
+  std::cout << "Downloading:" << repoConfig->id << " "
+            << repoConfig->display_name << " (" << repoConfig->name << ") at "
+            << url << std::endl;
   if (client.download_file(url, fileName)) {
     return true;
   } else {
