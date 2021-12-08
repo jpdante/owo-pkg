@@ -13,7 +13,9 @@ namespace owo {
 void setup_cli(int argc, char* argv[]) {
   enum class mode { install, update, search, remove, help };
 
-  Config config = load_config("../tmp/config.toml");
+  std::string defaultConfigPath = "../tmp/config.toml";
+
+  Config config = load_config(defaultConfigPath);
   mode selected = mode::help;
   std::vector<std::string> rawPackages;
   bool verbose = false;

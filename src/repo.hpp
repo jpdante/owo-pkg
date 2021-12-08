@@ -47,17 +47,12 @@ class CachedRepositories {
 
 RepositoryConfig* read_repository_config(std::filesystem::path filePath);
 
-std::vector<RepositoryConfig*> load_repositories_configs(
-    std::filesystem::path dirPath);
+std::vector<RepositoryConfig*> load_repositories_configs(std::filesystem::path dirPath);
 
-bool load_repository(RepositoryConfig* repoConfig,
-                     std::filesystem::path cachePath,
-                     CachedRepository** cached);
+bool load_repository(RepositoryConfig* repoConfig, std::filesystem::path cachePath, CachedRepository** cached);
 
-bool check_update(RepositoryConfig* repository, std::filesystem::path cachePath,
-                  bool verbose);
+bool check_update(RepositoryConfig* repository, std::filesystem::path cachePath, bool verbose);
 
-bool update_repository(RepositoryConfig* repository,
-                       std::filesystem::path cache_path);
+bool update_repository(RepositoryConfig* repository, std::filesystem::path cache_path);
 
 }  // namespace repo

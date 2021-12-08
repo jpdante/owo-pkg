@@ -1,9 +1,9 @@
 #pragma once
 
 #include <iostream>
+#include <nlohmann/json.hpp>
 #include <set>
 #include <vector>
-#include <nlohmann/json.hpp>
 
 class PackageDependencie {
  public:

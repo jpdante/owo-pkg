@@ -17,8 +17,13 @@ HttpClient::HttpClient(bool showProgressBar) {
     progressBar = new indicators::ProgressBar{
         indicators::option::BarWidth{50},
         indicators::option::Start{" ["},
+#ifdef _WIN32
+        indicators::option::Fill{"#"},
+        indicators::option::Lead{"#"},
+#else
         indicators::option::Fill{"█"},
         indicators::option::Lead{"█"},
+#endif
         indicators::option::Remainder{"-"},
         indicators::option::End{"]"},
         indicators::option::PrefixText{"Downloading"},

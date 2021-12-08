@@ -4,10 +4,10 @@ cmake_minimum_required (VERSION 3.8)
 project ("owo-pkg")
 add_executable (owo
 "src/owo-pkg.cpp"
-"src/cli.cpp"
 "src/http.cpp"
-"src/repo.cpp"
+"src/cli.cpp"
 "src/package.cpp"
+"src/repo.cpp"
 "src/utils/crypto.cpp"
 "src/commands/install.cpp"
 "src/commands/remove.cpp"
@@ -17,28 +17,21 @@ add_executable (owo
 
 # Set vars
 set(CMAKE_MODULE_PATH lib)
-set(EXTERNAL_LIB_HEADERS lib/curlpp/include lib/clipp/include lib/indicators/include lib/json/include lib/toml11 lib/zlib)
+#set(EXTERNAL_LIB_HEADERS include)
 set(OPENSSL_USE_STATIC_LIBS TRUE)
 
-# Compile curlpp
-add_subdirectory(lib/curlpp)
-
-# Compile indicators
-add_subdirectory(lib/indicators)
-
-# Compile json
-add_subdirectory(lib/json)
-
-# Compile toml
-add_subdirectory(lib/toml11)
-
-# Compile toml
-add_subdirectory(lib/zlib)
-
+# Find packages
+find_package(CURL CONFIG REQUIRED)
+find_package(ZLIB REQUIRED)
 find_package(OpenSSL REQUIRED)
+find_package(unofficial-curlpp CONFIG REQUIRED)
+find_package(indicators CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
+find_package(toml11 CONFIG REQUIRED)
+find_package(clipp CONFIG REQUIRED)
 
 # Include libraries
-target_include_directories(owo PRIVATE ${EXTERNAL_LIB_HEADERS})
+target_include_directories(owo PRIVATE) # ${EXTERNAL_LIB_HEADERS})
 
 # Link libraries
-target_link_libraries(owo PUBLIC curlpp indicators nlohmann_json toml11 OpenSSL::SSL zlib)
+target_link_libraries(owo PUBLIC unofficial::curlpp::curlpp indicators::indicators clipp::clipp nlohmann_json nlohmann_json::nlohmann_json toml11::toml11 OpenSSL::SSL ZLIB::ZLIB)

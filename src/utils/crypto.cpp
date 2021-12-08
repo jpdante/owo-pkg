@@ -39,7 +39,6 @@ bool sha256_file(std::string path, std::string &output) {
   EVP_MD_CTX *ctx = EVP_MD_CTX_new();
   EVP_DigestInit(ctx, EVP_sha256());
   const int bufSize = 32768;
-  int bytesRead = 0;
   while (!file.eof() && file.is_open()) {
     char buffer[bufSize];
     file.read(buffer, bufSize);
