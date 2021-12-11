@@ -41,7 +41,8 @@ class CachedRepositories {
   std::set<CachedRepository*> cached_repositories;
 
  public:
-  std::set<Package*> search(std::string value);
+  std::set<Package*> search_package(std::string value);
+  Package* get_package(std::string value);
   void add_repository(CachedRepository* repo);
 };
 

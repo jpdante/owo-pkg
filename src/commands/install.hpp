@@ -7,7 +7,7 @@
 
 namespace cmd {
 
-void install(Config config, std::set<std::string> packages, bool verbose,
+void install(Config config, std::set<std::string> packagesNames, bool verbose,
              bool force);
 
 }

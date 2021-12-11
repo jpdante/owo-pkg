@@ -39,7 +39,7 @@ void search(Config config, std::set<std::string> packages, bool verbose,
 
   std::set<Package*> results;
   for (std::string string : packages) {
-    std::set<Package*> result = cachedRepositories.search(string);
+    std::set<Package*> result = cachedRepositories.search_package(string);
     for (Package* pkg : result) {
       results.insert(pkg);
     }

@@ -43,21 +43,58 @@ CachedRepositories::CachedRepositories() {}
 
 void CachedRepositories::add_repository(CachedRepository* repo) { this->cached_repositories.insert(repo); }
 
-std::set<Package*> CachedRepositories::search(std::string name) {
+std::set<Package*> CachedRepositories::search_package(std::string value) {
+  std::string searchData;
+  std::string repositoryName;
+
+  if (value.find(':') != std::string::npos) {
+    int pos = value.find_first_of(':');
+    searchData = value.substr(pos + 1);
+    repositoryName = value.substr(0, pos);
+  } else {
+    searchData = value;
+    repositoryName = "";
+  }
+
   std::set<Package*> results;
   for (const CachedRepository* repo : this->cached_repositories) {
+    if (!repositoryName.empty() && repo->config->name != repositoryName) continue;
     for (Package* package : repo->packages) {
-      if (package->name.find(name) != std::string::npos) {
+      if (package->name.find(searchData) != std::string::npos) {
         results.insert(package);
         continue;
       }
-      if (package->tags.find(name) != package->tags.end()) {
+      if (package->tags.find(searchData) != package->tags.end()) {
         results.insert(package);
         continue;
       }
     }
   }
   return results;
+}
+
+Package* CachedRepositories::get_package(std::string value) {
+  std::string repositoryName;
+  std::string packageName;
+
+  if (value.find(':') != std::string::npos) {
+    int pos = value.find_first_of(':');
+    packageName = value.substr(pos + 1);
+    repositoryName = value.substr(0, pos);
+  } else {
+    packageName = value;
+    repositoryName = "";
+  }
+
+  for (const CachedRepository* repo : this->cached_repositories) {
+    if (!repositoryName.empty() && repo->config->name != repositoryName) continue;
+    for (Package* package : repo->packages) {
+      if (package->name == packageName) {
+        return package;
+      }
+    }
+  }
+  return nullptr;
 }
 
 // End CachedRepositories
