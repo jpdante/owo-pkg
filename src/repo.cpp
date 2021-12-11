@@ -101,7 +101,7 @@ std::vector<RepositoryConfig*> load_repositories_configs(std::filesystem::path d
 }
 
 bool load_repository(RepositoryConfig* repoConfig, std::filesystem::path cachePath, CachedRepository** cached) {
-  std::filesystem::path repoCachePath = cachePath / std::filesystem::path(repoConfig->config_fileName + ".rpi");
+  std::filesystem::path repoCachePath = cachePath / std::filesystem::path(repoConfig->name + ".rpi");
   if (!std::filesystem::exists(repoCachePath)) return false;
   nlohmann::json value;
   std::fstream cacheFile;
@@ -114,7 +114,7 @@ bool load_repository(RepositoryConfig* repoConfig, std::filesystem::path cachePa
 
 bool check_update(RepositoryConfig* repoConfig, std::filesystem::path cachePath, bool verbose) {
   std::string url = repoConfig->url + "packages/packages.sha256";
-  std::filesystem::path repoCachePath = cachePath / std::filesystem::path(repoConfig->config_fileName + ".rpi");
+  std::filesystem::path repoCachePath = cachePath / std::filesystem::path(repoConfig->name + ".rpi");
   std::string localHash;
   std::string remoteHash;
 
@@ -147,7 +147,7 @@ bool update_repository(RepositoryConfig* repoConfig, std::filesystem::path cache
     if (client.download_file(url, fileName.generic_string())) {
       gzFile compressedFile = gzopen(fileName.generic_string().c_str(), "rb");
       std::fstream uncompressedFile;
-      std::filesystem::path uncompressedFileName = cachePath / std::filesystem::path(repoConfig->config_fileName + ".rpi");
+      std::filesystem::path uncompressedFileName = cachePath / std::filesystem::path(repoConfig->name + ".rpi");
       if (std::filesystem::exists(uncompressedFileName)) std::filesystem::remove(uncompressedFileName);
       uncompressedFile.open(uncompressedFileName, std::ios::out | std::ios::binary | std::ios::trunc);
       try {

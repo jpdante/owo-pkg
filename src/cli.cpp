@@ -28,7 +28,7 @@ void setup_cli(int argc, char* argv[]) {
                      clipp::opt_values("packages", rawPackages));
 
   auto searchMode = (clipp::command("search").set(selected, mode::search),
-                     clipp::opt_values("packages", rawPackages));
+                     clipp::values("packages", rawPackages));
 
   auto removeMode = (clipp::command("remove").set(selected, mode::remove),
                      clipp::values("packages", rawPackages));
