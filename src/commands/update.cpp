@@ -4,14 +4,10 @@
 #include <iostream>
 #include <vector>
 
-#include "../http.hpp"
-#include "../repo.hpp"
+namespace owo::commands {
 
-namespace cmd {
-
-void update(Config config, std::set<std::string> packages, bool verbose,
-            bool force) {
-  std::filesystem::path repoConfigPath(config.repo_path);
+void update(std::set<std::string> packages) {
+  /*std::filesystem::path repoConfigPath(config.repo_path);
   std::filesystem::path cachePath(config.cache_path);
 
   std::vector<repo::RepositoryConfig*> repositoryConfigs =
@@ -51,7 +47,7 @@ void update(Config config, std::set<std::string> packages, bool verbose,
     // Update packages
   } else {
     // Update all
-  }
+  }*/
 }
 
-}  // namespace cmd
+}  // namespace owo::commands

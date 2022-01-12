@@ -3,10 +3,10 @@
 #include <iostream>
 #include <set>
 
-#include "../cli.hpp"
+#include "../core/cli.hpp"
 
-namespace cmd {
+namespace owo::commands {
 
-void remove(Config config, std::set<std::string> packages, bool verbose, bool force);
+void remove(std::set<std::string> packages);
 
 }

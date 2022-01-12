@@ -12,27 +12,17 @@
 #include <iostream>
 #include <sstream>
 
+namespace owo::core {
+
 HttpClient::HttpClient(bool showProgressBar) {
   if (showProgressBar) {
-    progressBar = new indicators::ProgressBar{
-        indicators::option::BarWidth{50},
-        indicators::option::Start{" ["},
+    progressBar = new indicators::ProgressBar{indicators::option::BarWidth{50},   indicators::option::Start{" ["},
 #ifdef _WIN32
-        indicators::option::Fill{"#"},
-        indicators::option::Lead{"#"},
+                                              indicators::option::Fill{"#"},      indicators::option::Lead{"#"},
 #else
-        indicators::option::Fill{"█"},
-        indicators::option::Lead{"█"},
+                                              indicators::option::Fill{"█"},      indicators::option::Lead{"█"},
 #endif
-        indicators::option::Remainder{"-"},
-        indicators::option::End{"]"},
-        indicators::option::PrefixText{"Downloading"},
-        indicators::option::ForegroundColor{indicators::Color::green},
-        indicators::option::ShowElapsedTime{true},
-        indicators::option::ShowRemainingTime{true},
-        indicators::option::ShowPercentage{true},
-        indicators::option::FontStyles{
-            std::vector<indicators::FontStyle>{indicators::FontStyle::bold}}};
+                                              indicators::option::Remainder{"-"}, indicators::option::End{"]"},    indicators::option::PrefixText{"Downloading"}, indicators::option::ForegroundColor{indicators::Color::green}, indicators::option::ShowElapsedTime{true}, indicators::option::ShowRemainingTime{true}, indicators::option::ShowPercentage{true}, indicators::option::FontStyles{std::vector<indicators::FontStyle>{indicators::FontStyle::bold}}};
   } else {
     progressBar = nullptr;
   }
@@ -54,9 +44,7 @@ bool HttpClient::download_string(std::string url, std::string& data) {
     request.setOpt(curlpp::options::WriteStream(&response));
     request.setOpt(curlpp::options::Verbose(false));
     request.setOpt(curlpp::options::NoProgress(0));
-    request.setOpt(curlpp::options::ProgressFunction(std::bind(
-        &HttpClient::progress, this, std::placeholders::_1,
-        std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)));
+    request.setOpt(curlpp::options::ProgressFunction(std::bind(&HttpClient::progress, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)));
     request.perform();
 
     data = std::string(response.str());
@@ -78,8 +66,7 @@ bool HttpClient::download_file(std::string url, std::string path) {
     curlpp::Cleanup myCleanup;
     curlpp::Easy request;
     std::fstream myfile;
-    myfile.open(
-        path, std::ios::in | std::ios::out | std::ios::binary | std::ios::app);
+    myfile.open(path, std::ios::in | std::ios::out | std::ios::binary | std::ios::app);
 
     indicators::show_console_cursor(false);
 
@@ -87,9 +74,7 @@ bool HttpClient::download_file(std::string url, std::string path) {
     request.setOpt(curlpp::options::WriteStream(&myfile));
     request.setOpt(curlpp::options::Verbose(false));
     request.setOpt(curlpp::options::NoProgress(0));
-    request.setOpt(curlpp::options::ProgressFunction(std::bind(
-        &HttpClient::progress, this, std::placeholders::_1,
-        std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)));
+    request.setOpt(curlpp::options::ProgressFunction(std::bind(&HttpClient::progress, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)));
     request.perform();
     myfile.close();
     indicators::show_console_cursor(true);
@@ -104,8 +89,7 @@ bool HttpClient::download_file(std::string url, std::string path) {
   return false;
 }
 
-double HttpClient::progress(double dltotal, double dlnow, double ultotal,
-                            double ulnow) {
+double HttpClient::progress(double dltotal, double dlnow, double ultotal, double ulnow) {
   if (progressBar == nullptr) return 0;
   if (dltotal == 0 && dlnow == 0) return 0;
   double progress = (dlnow / dltotal) * 100;
@@ -115,3 +99,5 @@ double HttpClient::progress(double dltotal, double dlnow, double ultotal,
   progressBar->set_progress((int)percent);
   return 0;
 }
+
+}  // namespace owo::core

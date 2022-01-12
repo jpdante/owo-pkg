@@ -3,13 +3,8 @@
 #include <iostream>
 #include <vector>
 
-#include "../repo.hpp"
+namespace owo::commands {
 
-namespace cmd {
+void remove(std::set<std::string> packages) { std::cout << "Remove" << std::endl; }
 
-void remove(Config config, std::set<std::string> packages, bool verbose,
-            bool force) {
-  std::cout << "Remove" << std::endl;
-}
-
-}  // namespace cmd
+}  // namespace owo::commands

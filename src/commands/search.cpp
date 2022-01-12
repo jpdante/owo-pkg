@@ -2,17 +2,16 @@
 
 #include <iostream>
 
-#include "../repo.hpp"
+namespace owo::commands {
 
-namespace cmd {
+void search(std::set<std::string> packages) {
+  RepositoryManager repoManager = RepositoryManager();
 
-void search(Config config, std::set<std::string> packages, bool verbose,
-            bool force) {
-  std::filesystem::path repoConfigPath(config.repo_path);
+
+  /*std::filesystem::path repoConfigPath(config.repo_path);
   std::filesystem::path cachePath(config.cache_path);
 
-  std::vector<repo::RepositoryConfig*> repos =
-      repo::load_repositories_configs(repoConfigPath);
+  std::vector<repo::RepositoryConfig*> repos = repo::load_repositories_configs(repoConfigPath);
 
   std::cout << "Reading repositories... ";
   if (verbose)
@@ -23,9 +22,7 @@ void search(Config config, std::set<std::string> packages, bool verbose,
   int count = 0;
   for (repo::RepositoryConfig* repoConfig : repos) {
     count++;
-    if (verbose)
-      std::cout << "Reading:" << count << " " << repoConfig->display_name
-                << " (" << repoConfig->name << ")... " << std::flush;
+    if (verbose) std::cout << "Reading:" << count << " " << repoConfig->display_name << " (" << repoConfig->name << ")... " << std::flush;
     repo::CachedRepository* cachedRepository;
     if (repo::load_repository(repoConfig, cachePath, &cachedRepository)) {
       cachedRepositories.add_repository(cachedRepository);
@@ -48,10 +45,9 @@ void search(Config config, std::set<std::string> packages, bool verbose,
   std::cout << "Found " << results.size() << " packages."
             << "\n";
   for (Package* pkg : results) {
-    std::cout << pkg->repository << ":" << pkg->name << "\n"
-              << pkg->description << "\n\n";
+    std::cout << pkg->repository << ":" << pkg->name << "\n" << pkg->description << "\n\n";
   }
-  std::cout << std::flush;
+  std::cout << std::flush;*/
 }
 
-}  // namespace cmd
+}  // namespace owo::commands

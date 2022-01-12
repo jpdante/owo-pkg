@@ -2,12 +2,10 @@
 
 #include <iostream>
 
-#include "../repo.hpp"
+namespace owo::commands {
 
-namespace cmd {
-
-void install(Config config, std::set<std::string> packagesNames, bool verbose, bool force) {
-  std::filesystem::path repoConfigPath(config.repo_path);
+void install(std::set<std::string> packagesNames) {
+  /*std::filesystem::path repoConfigPath(config.repo_path);
   std::filesystem::path cachePath(config.cache_path);
 
   std::vector<repo::RepositoryConfig*> repos = repo::load_repositories_configs(repoConfigPath);
@@ -27,19 +25,27 @@ void install(Config config, std::set<std::string> packagesNames, bool verbose, b
     }
   }
 
-  std::vector<Package*> packages;
+  std::vector<Package*> found_packages;
   for (std::string packageName : packagesNames) {
     Package* package = cachedRepositories.get_package(packageName);
     if (package == nullptr) {
       std::cout << "Failed to find package '" << packageName << "'." << std::endl;
       return;
     }
-    packages.push_back(package);
+    found_packages.push_back(package);
   }
 
-  for (Package* package : packages) {
+  std::queue<Package*> download_packages;
+  std::queue<Package*> install_packages;
+  for (Package* package : found_packages) {
     std::cout << "Installing " << package->repository + ":" + package->name + "@" + package->latest_version << "..." << std::endl;
-  }
+  }*/
 }
 
-}  // namespace cmd
+/*void add_package(std::queue<Package*> queue, Package* package) {
+  for (Package* package : package.) {
+    std::cout << "Installing " << package->repository + ":" + package->name + "@" + package->latest_version << "..." << std::endl;
+  }
+}*/
+
+}  // namespace owo::commands

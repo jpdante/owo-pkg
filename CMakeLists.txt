@@ -4,11 +4,12 @@ cmake_minimum_required (VERSION 3.8)
 project ("owo-pkg")
 add_executable (owo
 "src/owo-pkg.cpp"
-"src/http.cpp"
-"src/cli.cpp"
-"src/package.cpp"
-"src/repo.cpp"
-"src/utils/crypto.cpp"
+"src/shared.cpp"
+"src/core/cli.cpp"
+"src/core/crypto.cpp"
+"src/core/http.cpp"
+"src/repository/repository.cpp"
+"src/repository/repository-manager.cpp"
 "src/commands/install.cpp"
 "src/commands/remove.cpp"
 "src/commands/search.cpp"

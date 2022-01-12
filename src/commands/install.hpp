@@ -1,13 +1,15 @@
 #pragma once
 
 #include <iostream>
+#include <queue>
 #include <set>
 
-#include "../cli.hpp"
+#include "../core/cli.hpp"
 
-namespace cmd {
+namespace owo::commands {
 
-void install(Config config, std::set<std::string> packagesNames, bool verbose,
-             bool force);
+void install(std::set<std::string> packagesNames);
 
-}
+// void add_package(std::queue<Package*> queue, Package* package);
+
+}  // namespace owo::commands

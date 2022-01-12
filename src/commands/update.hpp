@@ -3,9 +3,10 @@
 #include <iostream>
 #include <set>
 
-#include "../cli.hpp"
-namespace cmd {
+#include "../core/cli.hpp"
 
-void update(Config config, std::set<std::string> packages, bool verbose, bool force);
+namespace owo::commands {
+
+void update(std::set<std::string> packages);
 
 }
