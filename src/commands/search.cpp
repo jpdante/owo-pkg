@@ -7,6 +7,10 @@ namespace owo::commands {
 void search(std::set<std::string> packages) {
   RepositoryManager repoManager = RepositoryManager(Shared::config.repositoryPath, Shared::config.cachePath);
 
+  /*for (auto repository : repoManager.GetRepositories()) {
+    
+  }*/
+
   /*std::filesystem::path repoConfigPath(config.repo_path);
   std::filesystem::path cachePath(config.cache_path);
 

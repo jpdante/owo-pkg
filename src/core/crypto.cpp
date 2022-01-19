@@ -7,7 +7,7 @@
 
 namespace owo::core {
 
-void sha256_string(std::string string, std::string &output) {
+void Sha256String(std::string string, std::string &output) {
   const char *strP = string.c_str();
   unsigned char digest[EVP_MAX_MD_SIZE];
   unsigned int outLen;
@@ -26,7 +26,7 @@ void sha256_string(std::string string, std::string &output) {
   output = std::string(hash);
 }
 
-bool sha256_file(std::string path, std::string &output) {
+bool Sha256File(std::filesystem::path path, std::string &output) {
   unsigned char digest[EVP_MAX_MD_SIZE];
   unsigned int outLen;
 

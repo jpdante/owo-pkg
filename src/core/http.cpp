@@ -32,7 +32,7 @@ HttpClient::~HttpClient() {
   if (progressBar != nullptr) delete progressBar;
 }
 
-bool HttpClient::download_string(std::string url, std::string& data) {
+bool HttpClient::DownloadString(std::string url, std::string& data) {
   try {
     curlpp::Cleanup myCleanup;
     curlpp::Easy request;
@@ -61,7 +61,7 @@ bool HttpClient::download_string(std::string url, std::string& data) {
   return false;
 }
 
-bool HttpClient::download_file(std::string url, std::string path) {
+bool HttpClient::DownloadFile(std::string url, std::filesystem::path path) {
   try {
     curlpp::Cleanup myCleanup;
     curlpp::Easy request;

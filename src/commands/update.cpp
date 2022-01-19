@@ -7,6 +7,14 @@
 namespace owo::commands {
 
 void update(std::set<std::string> packages) {
+  RepositoryManager repoManager = RepositoryManager(Shared::config.repositoryPath, Shared::config.cachePath);
+
+  int count = 1;
+  for (auto repository : repoManager.GetRepositories()) {
+    repository->UpdateRepository(count);
+    count++;
+  }
+
   /*std::filesystem::path repoConfigPath(config.repo_path);
   std::filesystem::path cachePath(config.cache_path);
 

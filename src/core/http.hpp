@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include <indicators/progress_bar.hpp>
 
 namespace owo::core {
@@ -13,8 +14,8 @@ class HttpClient {
   indicators::ProgressBar* progressBar;
 
  public:
-  bool download_string(std::string url, std::string& data);
-  bool download_file(std::string url, std::string path);
+  bool DownloadString(std::string url, std::string& data);
+  bool DownloadFile(std::string url, std::filesystem::path path);
 
  private:
   double progress(double dltotal, double dlnow, double ultotal, double ulnow);

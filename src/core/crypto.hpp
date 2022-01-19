@@ -1,10 +1,11 @@
 #pragma once
 
 #include <iostream>
+#include <filesystem>
 
 namespace owo::core {
 
-void sha256_string(std::string string, std::string &output);
-bool sha256_file(std::string path, std::string &output);
+void Sha256String(std::string string, std::string &output);
+bool Sha256File(std::filesystem::path path, std::string &output);
 
 }  // namespace owo::core
