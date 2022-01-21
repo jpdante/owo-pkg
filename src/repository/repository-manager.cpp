@@ -24,7 +24,7 @@ void RepositoryManager::LoadRepositories() {
   for (const auto& entry : std::filesystem::directory_iterator(this->repositoryPath)) {
     if (entry.is_regular_file() || entry.is_symlink()) {
       try {
-        const auto data = toml::parse(entry.path());
+        const toml::value data = toml::parse(entry.path());
         if (!data.contains("name")) continue;
         if (!data.contains("url")) continue;
 
@@ -39,7 +39,7 @@ void RepositoryManager::LoadRepositories() {
         std::cout << count << ":Found repository " << name << std::endl;
 
         AddRepository(RepositoryConfig{enabled, name, url, supportsCompression});
-      } catch (std::runtime_error ex) {
+      } catch (std::exception ex) {
         std::cout << count << ":Exception: " << ex.what() << std::endl;
       }
       count++;

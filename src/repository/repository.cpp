@@ -16,6 +16,7 @@ Repository::Repository(RepositoryConfig config, std::filesystem::path configPath
   this->loaded = false;
   std::filesystem::path cachePath = std::filesystem::path(Shared::config.cachePath);
   this->cacheFilePath = cachePath / (this->name + ".repo.cache");
+  this->packageStream = nullptr;
 }
 
 Repository::~Repository() {
