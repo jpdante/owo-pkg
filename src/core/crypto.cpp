@@ -22,7 +22,6 @@ void Sha256String(std::string string, std::string &output) {
   for (int i = 0; i < outLen; i++) {
     sprintf(hash + (i * 2), "%02x", digest[i]);
   }
-  output[64] = 0;
   output = std::string(hash);
 }
 
@@ -51,9 +50,8 @@ bool Sha256File(std::filesystem::path path, std::string &output) {
   for (int i = 0; i < outLen; i++) {
     sprintf(hash + (i * 2), "%02x", digest[i]);
   }
-  output[64] = 0;
   output = std::string(hash);
-  return 0;
+  return true;
 }
 
 }  // namespace owo::core

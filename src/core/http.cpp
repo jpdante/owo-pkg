@@ -51,12 +51,9 @@ bool HttpClient::DownloadString(std::string url, std::string& data) {
 
     indicators::show_console_cursor(true);
     return curlpp::infos::ResponseCode::get(request) == 200;
-  } catch (curlpp::RuntimeError& e) {
+  } catch (std::exception ex) {
     indicators::show_console_cursor(true);
-    std::cout << e.what() << std::endl;
-  } catch (curlpp::LogicError& e) {
-    indicators::show_console_cursor(true);
-    std::cout << e.what() << std::endl;
+    throw ex;
   }
   return false;
 }
@@ -79,12 +76,9 @@ bool HttpClient::DownloadFile(std::string url, std::filesystem::path path) {
     myfile.close();
     indicators::show_console_cursor(true);
     return curlpp::infos::ResponseCode::get(request) == 200;
-  } catch (curlpp::RuntimeError& e) {
+  } catch (std::exception ex) {
     indicators::show_console_cursor(true);
-    std::cout << e.what() << std::endl;
-  } catch (curlpp::LogicError& e) {
-    indicators::show_console_cursor(true);
-    std::cout << e.what() << std::endl;
+    throw ex;
   }
   return false;
 }

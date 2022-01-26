@@ -5,12 +5,25 @@
 namespace owo::commands {
 
 void search(std::set<std::string> packages) {
-  RepositoryManager repoManager = RepositoryManager(Shared::config.repositoryPath, Shared::config.cachePath);
+  try {
+    RepositoryManager repoManager = RepositoryManager(Shared::config.repositoryPath, Shared::config.cachePath);
 
-  /*for (auto repository : repoManager.GetRepositories()) {
-    
-  }*/
+    std::list<std::string> foundPackages;
+    for (auto repository : repoManager.GetRepositories()) {
+      if (!repository->LoadRepository()) throw std::runtime_error("Repository '" + repository->name + "' cannot be loaded, try to update the repository.");
+      for (auto package : packages) {
+        for (auto foundPackage : repository->SearchPackages(package)) {
+          foundPackages.push_back(foundPackage);
+        }
+      }
+    }
 
+    for (auto package : foundPackages) {
+      std::cout << package << std::endl;
+    }
+  } catch (std::exception ex) {
+    std::cout << "Exception: " << ex.what() << std::endl;
+  }
   /*std::filesystem::path repoConfigPath(config.repo_path);
   std::filesystem::path cachePath(config.cache_path);
 

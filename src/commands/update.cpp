@@ -2,7 +2,10 @@
 
 #include <filesystem>
 #include <iostream>
+#include <string>
 #include <vector>
+
+#include "../core/crypto.hpp"
 
 namespace owo::commands {
 
@@ -11,7 +14,13 @@ void update(std::set<std::string> packages) {
 
   int count = 1;
   for (auto repository : repoManager.GetRepositories()) {
-    repository->UpdateRepository(count);
+    std::string prefix = std::to_string(count) + ":";
+    try {
+      std::cout << prefix << "Checking " << repository->name << " for updates" << std::endl;
+      if (repository->CheckUpdate(prefix)) { repository->UpdateRepository(prefix); }
+    } catch (std::exception ex) {
+      std::cout << prefix << "Failed to update " << repository->name << std::endl;
+    }
     count++;
   }
 

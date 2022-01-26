@@ -31,47 +31,56 @@ bool Repository::LoadRepository() {
     this->packageStream->close();
     delete this->packageStream;
   }
+  if (!std::filesystem::exists(this->cacheFilePath)) return false;
   this->packageStream = new std::ifstream(this->cacheFilePath);
-  bool isOpen = this->packageStream->is_open();
-  if (!isOpen) {
-    this->packageStream->close();
-    delete this->packageStream;
+  if (this->packageStream) {
+    bool isOpen = this->packageStream->is_open();
+    if (!isOpen) {
+      this->packageStream->close();
+      delete this->packageStream;
+    }
+    return isOpen;
   }
-  return isOpen;
+  return false;
 }
 
-bool Repository::UpdateRepository(int count = -1) {
+bool Repository::CheckUpdate(std::string logPrefix = "") {
+  core::HttpClient httpClient = core::HttpClient();
+
+  std::string packagesSha256;
+  if (!httpClient.DownloadString(this->url + "/packages/Packages.sha256", packagesSha256)) {
+    throw std::runtime_error("Failed to download hash at '" + this->url + "/packages/Packages.sha256" + "'");
+  }
+
+  std::string fileSha256;
+  if (core::Sha256File(this->cacheFilePath, fileSha256)) {
+    return packagesSha256 != fileSha256;
+  } else {
+    return true;
+  }
+}
+
+bool Repository::UpdateRepository(std::string logPrefix = "") {
   core::HttpClient httpClient = core::HttpClient();
   if (this->supportsCompression) {
     try {
+      std::cout << logPrefix << "Updating repository " + this->name << std::endl;
       if (!ClearCache()) throw std::runtime_error("Failed to delete old cache file at '" + this->cacheFilePath.generic_string() + "'");
       DownloadRepository(httpClient, this->supportsCompression);
       return true;
     } catch (std::exception ex) {
-      if (count != -1) {
-        std::cout << count << ":Exception: " << ex.what() << std::endl;
-        std::cout << count << ":Failed to use compression, going to fallback" << std::endl;
-      } else {
-        std::cout << "Exception: " << ex.what() << std::endl;
-        std::cout << "Failed to use compression, going to fallback" << std::endl;
-      }
+      std::cout << logPrefix << "Exception: " << ex.what() << std::endl;
+      std::cout << logPrefix << "Failed to use compression, going to fallback" << std::endl;
     }
   }
   try {
-    if (count != -1) {
-      std::cout << count << ":Updating repository" << std::endl;
-    } else {
-      std::cout << "Updating repository '" + this->name + "'" << std::endl;
-    }
+    std::cout << logPrefix << "Updating repository " + this->name << std::endl;
+
     if (!ClearCache()) throw std::runtime_error("Failed to delete old cache file at '" + this->cacheFilePath.generic_string() + "'");
     DownloadRepository(httpClient, false);
     return true;
-  } catch (std::runtime_error ex) {
-    if (count != -1) {
-      std::cout << count << ":Exception: " << ex.what() << std::endl;
-    } else {
-      std::cout << "Exception: " << ex.what() << std::endl;
-    }
+  } catch (std::exception ex) {
+    std::cout << logPrefix << "Exception: " << ex.what() << std::endl;
   }
   return false;
 }

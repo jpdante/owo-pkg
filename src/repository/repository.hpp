@@ -35,7 +35,8 @@ class Repository {
 
  public:
   bool LoadRepository();
-  bool UpdateRepository(int count);
+  bool CheckUpdate(std::string logPrefix);
+  bool UpdateRepository(std::string logPrefix);
   bool ClearCache();
   std::list<std::string> SearchPackages(std::string packages);
 
