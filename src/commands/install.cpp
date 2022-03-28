@@ -2,9 +2,14 @@
 
 #include <iostream>
 
+#include "../core/database.hpp"
+#include "../shared.hpp"
+
 namespace owo::commands {
 
-void install(std::set<std::string> packagesNames) {
+void install(Cli* cli, std::set<std::string> packagesNames) {
+  // owo::core::Database database = owo::core::Database(Shared::config.databasePath);
+
   /*std::filesystem::path repoConfigPath(config.repo_path);
   std::filesystem::path cachePath(config.cache_path);
 

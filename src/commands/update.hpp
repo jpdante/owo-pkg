@@ -3,11 +3,10 @@
 #include <iostream>
 #include <set>
 
-#include "../core/cli.hpp"
+#include "../main.hpp"
 #include "../repository/repository-manager.hpp"
-
 namespace owo::commands {
 
-void update(std::set<std::string> packages);
+void update(Cli* cli, std::set<std::string> packagesNames);
 
 }

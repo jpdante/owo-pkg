@@ -1,20 +1,20 @@
 #pragma once
 
 #include <string>
+#include <filesystem>
 
 struct Config {
  public:
-  std::string repositoryPath;
-  std::string cachePath;
+  std::filesystem::path repositoryPath;
+  std::filesystem::path cachePath;
+  std::filesystem::path databasePath;
 
  public:
   Config();
-  Config(std::string repositoryPath, std::string cachePath);
+  Config(std::filesystem::path repositoryPath, std::filesystem::path cachePath, std::filesystem::path databasePath);
 };
 
 class Shared {
  public:
-  inline static bool verbose = false;
-  inline static bool force = false;
   inline static Config config = Config();
 };

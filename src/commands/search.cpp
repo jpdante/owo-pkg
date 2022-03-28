@@ -4,8 +4,8 @@
 
 namespace owo::commands {
 
-void search(std::set<std::string> packages) {
-  try {
+void search(Cli* cli, std::set<std::string> packagesNames) {
+  /*try {
     RepositoryManager repoManager = RepositoryManager(Shared::config.repositoryPath, Shared::config.cachePath);
 
     std::list<std::string> foundPackages;
@@ -23,7 +23,8 @@ void search(std::set<std::string> packages) {
     }
   } catch (std::exception ex) {
     std::cout << "Exception: " << ex.what() << std::endl;
-  }
+  }*/
+
   /*std::filesystem::path repoConfigPath(config.repo_path);
   std::filesystem::path cachePath(config.cache_path);
 

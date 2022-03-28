@@ -3,11 +3,11 @@
 #include <iostream>
 #include <set>
 
-#include "../core/cli.hpp"
+#include "../main.hpp"
 #include "../repository/repository-manager.hpp"
 
 namespace owo::commands {
 
-void search(std::set<std::string> packages);
-    
+void search(Cli* cli, std::set<std::string> packagesNames);
+
 }

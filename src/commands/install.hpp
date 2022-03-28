@@ -4,12 +4,10 @@
 #include <queue>
 #include <set>
 
-#include "../core/cli.hpp"
+#include "../main.hpp"
 
 namespace owo::commands {
 
-void install(std::set<std::string> packagesNames);
-
-// void add_package(std::queue<Package*> queue, Package* package);
+void install(Cli* cli, std::set<std::string> packagesNames);
 
 }  // namespace owo::commands

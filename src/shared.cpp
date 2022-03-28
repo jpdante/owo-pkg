@@ -5,7 +5,8 @@ Config::Config() {
   this->cachePath = "";
 }
 
-Config::Config(std::string repositoryPath, std::string cachePath) {
+Config::Config(std::filesystem::path repositoryPath, std::filesystem::path cachePath, std::filesystem::path databasePath) {
   this->repositoryPath = repositoryPath;
   this->cachePath = cachePath;
+  this->databasePath = databasePath;
 }

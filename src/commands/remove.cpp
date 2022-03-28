@@ -5,6 +5,6 @@
 
 namespace owo::commands {
 
-void remove(std::set<std::string> packages) { std::cout << "Remove" << std::endl; }
+void remove(Cli* cli, std::set<std::string> packagesNames) { std::cout << "Remove" << std::endl; }
 
 }  // namespace owo::commands

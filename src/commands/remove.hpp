@@ -3,10 +3,10 @@
 #include <iostream>
 #include <set>
 
-#include "../core/cli.hpp"
+#include "../main.hpp"
 
 namespace owo::commands {
 
-void remove(std::set<std::string> packages);
+void remove(Cli* cli, std::set<std::string> packagesNames);
 
 }
