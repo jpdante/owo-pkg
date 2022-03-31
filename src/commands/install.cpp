@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include "../core/database.hpp"
-#include "../shared.hpp"
 
 namespace owo::commands {
 

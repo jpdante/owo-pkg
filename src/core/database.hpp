@@ -1,5 +1,7 @@
 #pragma once
 
+#include <sqlite3.h>
+
 #include <filesystem>
 
 namespace owo::core {
@@ -9,7 +11,12 @@ class Database {
   Database(std::filesystem::path dbPath);
   ~Database();
 
-  public:
+ private:
+  std::filesystem::path dbPath;
+  sqlite3 *sqlite3Db;
+
+ public:
+  void Init();
   void AddPackage();
   void UpdatePackage();
   void RemovePackage();

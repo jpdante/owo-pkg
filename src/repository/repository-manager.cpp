@@ -5,11 +5,9 @@
 
 namespace owo {
 
-RepositoryManager::RepositoryManager(std::filesystem::path repositoryPath, std::filesystem::path cachePath) {
-  this->repositoryPath = repositoryPath;
-  this->cachePath = repositoryPath;
-  this->repositories.clear();
-  LoadRepositories();
+RepositoryManager::RepositoryManager(std::filesystem::path repositoriesPath, std::filesystem::path cachePath) {
+  this->repositoriesPath = repositoriesPath;
+  this->cachePath = repositoriesPath;
 }
 
 RepositoryManager::~RepositoryManager() {
@@ -20,8 +18,14 @@ RepositoryManager::~RepositoryManager() {
 }
 
 void RepositoryManager::LoadRepositories() {
+  this->repositories.clear();
   int count = 1;
-  for (const auto& entry : std::filesystem::directory_iterator(this->repositoryPath)) {
+  if (!std::filesystem::exists(this->repositoriesPath) || !std::filesystem::is_directory(this->repositoriesPath)) {
+    if (!std::filesystem::create_directory(this->repositoriesPath)) {
+      throw std::runtime_error("Failed to create directory " + this->repositoriesPath.generic_string());
+    }
+  }
+  for (const auto& entry : std::filesystem::directory_iterator(this->repositoriesPath)) {
     if (entry.is_regular_file() || entry.is_symlink()) {
       try {
         const toml::value data = toml::parse(entry.path());
@@ -51,8 +55,8 @@ void RepositoryManager::AddRepository(RepositoryConfig config) {
   if (ContainsRepository(config.name)) {
     throw std::runtime_error("A repository with the name '" + config.name + "' already exists");
   }
-  std::filesystem::path configPath = this->repositoryPath / (config.name + ".toml");
-  Repository* repository = new Repository(config, configPath);
+  std::filesystem::path configPath = this->repositoriesPath / (config.name + ".toml");
+  Repository* repository = new Repository(config, configPath, configPath);
   this->repositories.push_back(repository);
 }
 
@@ -84,4 +88,4 @@ bool RepositoryManager::ContainsRepository(std::string name) {
   return false;
 }
 
-}
+}  // namespace owo

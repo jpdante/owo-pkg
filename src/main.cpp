@@ -25,31 +25,46 @@ Cli::Cli(int argc, char* argv[]) {
     }
   }
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-  configPath = "C:\\ProgramData\\owopkg";
+  configPath = "C:\\ProgramData\\owopkg\\config.toml";
+  repoPath = "C:\\ProgramData\\owopkg";
   databasePath = "C:\\ProgramData\\owopkg";
   cachePath = std::filesystem::temp_directory_path() / "owopkg";
 #elif __APPLE__
-  configPath = "/Library/Preferences/owopkg";
+  configPath = "/Library/Preferences/owopkg/config.toml";
+  repoPath = "/Library/Preferences/owopkg";
   databasePath = "/Library/Application Support/owopkg";
   cachePath = "/Library/Caches/owopkg";
 #elif __linux__ || __unix__
-  configPath = "/etc/owopkg";
+  configPath = "/etc/owopkg/config.toml";
+  repoPath = "/etc/owopkg";
   databasePath = "/var/lib/owopkg";
   cachePath = "/var/cache/owopkg";
 #endif
   try {
-    if (const char* owoConfig = std::getenv("OWOCONFIG")) configPath = std::string(owoConfig);
+    const auto config = toml::parse(configPath);
+    repoPath = toml::find_or<std::string>(config, "repo_path", repoPath);
+    cachePath = toml::find<std::string>(config, "cache_path", cachePath);
+    databasePath = toml::find<std::string>(config, "database_path", databasePath);
+  } catch (std::exception& ex) {
+    std::cout << "Failed to read config at " << configPath << std::endl;
+    std::cout << ex.what() << std::endl;
+    return;
+  }
+  try {
+    if (const char* owoRepo = std::getenv("OWOCONFIG")) repoPath = std::string(owoRepo);
     if (const char* owoDb = std::getenv("OWODB")) databasePath = std::string(owoDb);
     if (const char* owoCache = std::getenv("OWOCACHE")) cachePath = std::string(owoCache);
     EnsurePaths();
-    client = new OwOPkg(configPath / "repositories", cachePath, databasePath);
-  } catch (std::exception ex) {
+    client = new OwOPkg(repoPath, cachePath, databasePath);
+    client->RegisterLogger(this);
+    client->Init();
+  } catch (std::exception& ex) {
     std::cout << ex.what() << std::endl;
     return;
   }
   try {
     ProcessCommand();
-  } catch (std::exception ex) {
+  } catch (std::exception& ex) {
     std::cout << ex.what() << std::endl;
   }
 }
@@ -59,9 +74,6 @@ Cli::~Cli() {
 }
 
 bool Cli::ReadArguments(int argc, char* argv[]) {
-  std::string defaultConfigPath = "../tmp/config.toml";
-  Shared::config = LoadConfig(defaultConfigPath);
-
   std::vector<std::string> rawPackages;
 
   auto installCmd = (clipp::command("install").set(selectedCmd, Command::install), clipp::values("packages", rawPackages));
@@ -122,15 +134,6 @@ void Cli::EnsurePaths() {
   CreateDirectory(cachePath);
 }
 
-Config Cli::LoadConfig(std::filesystem::path fileName) {
-  const auto data = toml::parse(fileName);
-  Config config;
-  config.repositoryPath = toml::find<std::string>(data, "repo_path");
-  config.cachePath = toml::find<std::string>(data, "cache_path");
-  config.databasePath = toml::find<std::string>(data, "db_path");
-  return config;
-}
-
 void Cli::PrintUsage() {
   std::cout << "owo-pkg v1.0.0\n";
   std::cout << "Usage: owo [options] command\n\n";
@@ -141,4 +144,10 @@ void Cli::PrintUsage() {
   std::cout << "  search <packages>\n";
   std::cout << "  remove <packages>";
   std::cout << std::endl;
+}
+
+void Cli::OnLog(LogType type, std::string message) {
+  if (quiet && type < LogType::Error) return;
+  if (!verbose && type == LogType::Verbose) return;
+  std::cout << message << std::endl;
 }

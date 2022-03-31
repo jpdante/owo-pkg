@@ -3,18 +3,16 @@
 #include <zlib.h>
 
 #include "../core/crypto.hpp"
-#include "../shared.hpp"
 
 namespace owo {
 
-Repository::Repository(RepositoryConfig config, std::filesystem::path configPath) {
+Repository::Repository(RepositoryConfig config, std::filesystem::path configPath, std::filesystem::path cachePath) {
   this->enabled = config.enabled;
   this->name = config.name;
   this->url = config.url;
   this->supportsCompression = config.supportsCompression;
   this->configPath = configPath;
   this->loaded = false;
-  std::filesystem::path cachePath = std::filesystem::path(Shared::config.cachePath);
   this->cacheFilePath = cachePath / (this->name + ".repo.cache");
   this->packageStream = nullptr;
 }

@@ -7,19 +7,20 @@
 #include <set>
 
 #include "owopkg.hpp"
-#include "shared.hpp"
 
 enum class Command { install, update, search, remove, help };
 
-class Cli {
+class Cli : public Logger {
  public:
   Cli(int argc, char* argv[]);
   ~Cli();
 
  private:
   std::filesystem::path configPath;
+  std::filesystem::path repoPath;
   std::filesystem::path databasePath;
   std::filesystem::path cachePath;
+  Command selectedCmd = Command::help;
 
  public:
   OwOPkg* client;
@@ -30,12 +31,11 @@ class Cli {
   bool noRoot = false;
 
  private:
-  Command selectedCmd = Command::help;
-
- private:
   bool ReadArguments(int argc, char* argv[]);
   void ProcessCommand();
   void EnsurePaths();
-  Config LoadConfig(std::filesystem::path fileName);
   void PrintUsage();
+
+ public:
+  void OnLog(LogType type, std::string message) override;
 };

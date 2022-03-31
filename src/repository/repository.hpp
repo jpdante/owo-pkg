@@ -30,7 +30,7 @@ class Repository {
   std::ifstream* packageStream;
 
  public:
-  Repository(RepositoryConfig config, std::filesystem::path configPath);
+  Repository(RepositoryConfig config, std::filesystem::path configPath, std::filesystem::path cachePath);
   ~Repository();
 
  public:

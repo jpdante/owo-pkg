@@ -9,18 +9,16 @@ namespace owo {
 
 class RepositoryManager {
  private:
-  std::filesystem::path repositoryPath;
+  std::filesystem::path repositoriesPath;
   std::filesystem::path cachePath;
   std::list<Repository*> repositories;
 
  public:
-  RepositoryManager(std::filesystem::path repositoryPath, std::filesystem::path cachePath);
+  RepositoryManager(std::filesystem::path repositoriesPath, std::filesystem::path cachePath);
   ~RepositoryManager();
 
- private:
-  void LoadRepositories();
-
  public:
+  void LoadRepositories();
   void AddRepository(RepositoryConfig config);
   Repository* GetRepository(std::string name);
   const std::list<Repository*>& GetRepositories();
@@ -29,4 +27,4 @@ class RepositoryManager {
   bool ContainsRepository(std::string name);
 };
 
-}
+}  // namespace owo

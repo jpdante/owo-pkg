@@ -5,7 +5,6 @@ project ("owo-pkg")
 add_executable (owo
 "src/main.cpp"
 "src/owopkg.cpp"
-"src/shared.cpp"
 "src/core/crypto.cpp"
 "src/core/http.cpp"
 "src/core/database.cpp"
@@ -21,7 +20,7 @@ add_executable (owo
 # Set vars
 set(CMAKE_MODULE_PATH lib)
 #set(EXTERNAL_LIB_HEADERS include)
-set(OPENSSL_USE_STATIC_LIBS TRUE)
+#set(OPENSSL_USE_STATIC_LIBS TRUE)
 
 # Find packages
 find_package(CURL CONFIG REQUIRED)
