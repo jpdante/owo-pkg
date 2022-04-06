@@ -42,9 +42,9 @@ Cli::Cli(int argc, char* argv[]) {
 #endif
   try {
     const auto config = toml::parse(configPath);
-    repoPath = toml::find_or<std::string>(config, "repo_path", repoPath);
-    cachePath = toml::find<std::string>(config, "cache_path", cachePath);
-    databasePath = toml::find<std::string>(config, "database_path", databasePath);
+    if (config.contains("repo_path")) repoPath = toml::find<std::string>(config, "repo_path");
+    if (config.contains("cache_path")) cachePath = toml::find<std::string>(config, "cache_path");
+    if (config.contains("database_path")) databasePath = toml::find<std::string>(config, "database_path");
   } catch (std::exception& ex) {
     std::cout << "Failed to read config at " << configPath << std::endl;
     std::cout << ex.what() << std::endl;
@@ -55,9 +55,9 @@ Cli::Cli(int argc, char* argv[]) {
     if (const char* owoDb = std::getenv("OWODB")) databasePath = std::string(owoDb);
     if (const char* owoCache = std::getenv("OWOCACHE")) cachePath = std::string(owoCache);
     EnsurePaths();
-    client = new OwOPkg(repoPath, cachePath, databasePath);
-    client->RegisterLogger(this);
-    client->Init();
+    owopkg = new OwOPkg(repoPath, cachePath, databasePath);
+    owopkg->RegisterAppender(this);
+    owopkg->Init();
   } catch (std::exception& ex) {
     std::cout << ex.what() << std::endl;
     return;
@@ -70,7 +70,7 @@ Cli::Cli(int argc, char* argv[]) {
 }
 
 Cli::~Cli() {
-  if (client != nullptr) delete client;
+  if (owopkg != nullptr) delete owopkg;
 }
 
 bool Cli::ReadArguments(int argc, char* argv[]) {
@@ -146,8 +146,8 @@ void Cli::PrintUsage() {
   std::cout << std::endl;
 }
 
-void Cli::OnLog(LogType type, std::string message) {
-  if (quiet && type < LogType::Error) return;
-  if (!verbose && type == LogType::Verbose) return;
+void Cli::OnLog(owo::core::LogType type, std::string message) {
+  if (quiet && type < owo::core::LogType::Error) return;
+  if (!verbose && type == owo::core::LogType::Verbose) return;
   std::cout << message << std::endl;
 }

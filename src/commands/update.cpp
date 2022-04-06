@@ -10,19 +10,7 @@
 namespace owo::commands {
 
 void update(Cli* cli, std::set<std::string> packagesNames) {
-  /*RepositoryManager repoManager = RepositoryManager(Shared::config.repositoryPath, Shared::config.cachePath);
-
-  int count = 1;
-  for (auto repository : repoManager.GetRepositories()) {
-    std::string prefix = std::to_string(count) + ":";
-    try {
-      std::cout << prefix << "Checking " << repository->name << " for updates" << std::endl;
-      if (repository->CheckUpdate(prefix)) { repository->UpdateRepository(prefix); }
-    } catch (std::exception ex) {
-      std::cout << prefix << "Failed to update " << repository->name << std::endl;
-    }
-    count++;
-  }*/
+  cli->owopkg->UpdateRepositories();
 
   /*std::filesystem::path repoConfigPath(config.repo_path);
   std::filesystem::path cachePath(config.cache_path);

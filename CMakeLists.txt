@@ -7,6 +7,7 @@ add_executable (owo
 "src/owopkg.cpp"
 "src/core/crypto.cpp"
 "src/core/http.cpp"
+"src/core/logging.cpp"
 "src/core/database.cpp"
 "src/repository/repository.cpp"
 "src/repository/repository-manager.cpp"

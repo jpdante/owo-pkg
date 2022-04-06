@@ -3,18 +3,20 @@
 #include <filesystem>
 #include <list>
 
+#include "../core/logging.hpp"
 #include "repository.hpp"
 
 namespace owo {
 
 class RepositoryManager {
  private:
+  core::Logger* logger;
   std::filesystem::path repositoriesPath;
   std::filesystem::path cachePath;
   std::list<Repository*> repositories;
 
  public:
-  RepositoryManager(std::filesystem::path repositoriesPath, std::filesystem::path cachePath);
+  RepositoryManager(core::Logger* logger, std::filesystem::path repositoriesPath, std::filesystem::path cachePath);
   ~RepositoryManager();
 
  public:

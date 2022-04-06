@@ -5,7 +5,8 @@
 
 namespace owo {
 
-RepositoryManager::RepositoryManager(std::filesystem::path repositoriesPath, std::filesystem::path cachePath) {
+RepositoryManager::RepositoryManager(core::Logger* logger, std::filesystem::path repositoriesPath, std::filesystem::path cachePath) {
+  this->logger = logger;
   this->repositoriesPath = repositoriesPath;
   this->cachePath = repositoriesPath;
 }
@@ -40,11 +41,11 @@ void RepositoryManager::LoadRepositories() {
         if (name.empty()) throw std::runtime_error("Repository name at '" + entry.path().generic_string() + "' cannot be empty");
         if (url.empty()) throw std::runtime_error("Repository url at '" + entry.path().generic_string() + "' cannot be empty");
 
-        std::cout << count << ":Found repository " << name << std::endl;
+        logger->Info(std::to_string(count) + ":Found repository " + name);
 
         AddRepository(RepositoryConfig{enabled, name, url, supportsCompression});
-      } catch (std::exception ex) {
-        std::cout << count << ":Exception: " << ex.what() << std::endl;
+      } catch (std::exception& ex) {
+        logger->Error(std::to_string(count) + ":Exception: " + ex.what());
       }
       count++;
     }

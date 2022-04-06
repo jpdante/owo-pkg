@@ -6,11 +6,12 @@
 #include <iostream>
 #include <set>
 
+#include "core/logging.hpp"
 #include "owopkg.hpp"
 
 enum class Command { install, update, search, remove, help };
 
-class Cli : public Logger {
+class Cli : public owo::core::Appender {
  public:
   Cli(int argc, char* argv[]);
   ~Cli();
@@ -23,7 +24,7 @@ class Cli : public Logger {
   Command selectedCmd = Command::help;
 
  public:
-  OwOPkg* client;
+  OwOPkg* owopkg;
   std::set<std::string> packages;
   bool quiet = false;
   bool force = false;
@@ -37,5 +38,5 @@ class Cli : public Logger {
   void PrintUsage();
 
  public:
-  void OnLog(LogType type, std::string message) override;
+  void OnLog(owo::core::LogType type, std::string message) override;
 };

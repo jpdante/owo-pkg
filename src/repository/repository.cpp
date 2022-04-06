@@ -66,7 +66,7 @@ bool Repository::UpdateRepository(std::string logPrefix = "") {
       if (!ClearCache()) throw std::runtime_error("Failed to delete old cache file at '" + this->cacheFilePath.generic_string() + "'");
       DownloadRepository(httpClient, this->supportsCompression);
       return true;
-    } catch (std::exception ex) {
+    } catch (std::exception& ex) {
       std::cout << logPrefix << "Exception: " << ex.what() << std::endl;
       std::cout << logPrefix << "Failed to use compression, going to fallback" << std::endl;
     }
@@ -77,7 +77,7 @@ bool Repository::UpdateRepository(std::string logPrefix = "") {
     if (!ClearCache()) throw std::runtime_error("Failed to delete old cache file at '" + this->cacheFilePath.generic_string() + "'");
     DownloadRepository(httpClient, false);
     return true;
-  } catch (std::exception ex) {
+  } catch (std::exception& ex) {
     std::cout << logPrefix << "Exception: " << ex.what() << std::endl;
   }
   return false;
@@ -116,7 +116,7 @@ void Repository::DownloadRepository(owo::core::HttpClient httpClient, bool useCo
         uncompressedFile.close();
         if (std::filesystem::exists(compressedFilePath)) std::filesystem::remove(compressedFilePath);
       }
-    } catch (std::exception ex) {
+    } catch (std::exception& ex) {
       gzclose(compressedFile);
       throw ex;
     }
