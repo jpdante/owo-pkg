@@ -10,13 +10,14 @@ namespace owo {
 
 class RepositoryManager {
  private:
+  core::LoggerManager* loggerManager;
   core::Logger* logger;
   std::filesystem::path repositoriesPath;
   std::filesystem::path cachePath;
   std::list<Repository*> repositories;
 
  public:
-  RepositoryManager(core::Logger* logger, std::filesystem::path repositoriesPath, std::filesystem::path cachePath);
+  RepositoryManager(core::LoggerManager* loggerManager, std::filesystem::path repositoriesPath, std::filesystem::path cachePath);
   ~RepositoryManager();
 
  public:

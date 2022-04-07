@@ -15,9 +15,10 @@ class OwOPkg {
   std::filesystem::path repositoryPath;
   std::filesystem::path cachePath;
   std::filesystem::path databasePath;
-  owo::core::Logger* logger;
+  owo::core::LoggerManager* loggerManager;
   owo::core::Database* database;
   owo::RepositoryManager* repositoryManager;
+  owo::core::Logger* logger;
 
  public:
   void Init();

@@ -6,7 +6,8 @@
 
 namespace owo {
 
-Repository::Repository(RepositoryConfig config, std::filesystem::path configPath, std::filesystem::path cachePath) {
+Repository::Repository(core::Logger* logger, RepositoryConfig config, std::filesystem::path configPath, std::filesystem::path cachePath) {
+  this->logger = logger;
   this->enabled = config.enabled;
   this->name = config.name;
   this->url = config.url;
@@ -22,6 +23,7 @@ Repository::~Repository() {
     this->packageStream->close();
     delete this->packageStream;
   }
+  this->logger->Free();
 }
 
 bool Repository::LoadRepository() {
@@ -42,7 +44,7 @@ bool Repository::LoadRepository() {
   return false;
 }
 
-bool Repository::CheckUpdate(std::string logPrefix = "") {
+bool Repository::CheckUpdate() {
   core::HttpClient httpClient = core::HttpClient();
 
   std::string packagesSha256;
@@ -58,27 +60,27 @@ bool Repository::CheckUpdate(std::string logPrefix = "") {
   }
 }
 
-bool Repository::UpdateRepository(std::string logPrefix = "") {
+bool Repository::UpdateRepository() {
   core::HttpClient httpClient = core::HttpClient();
   if (this->supportsCompression) {
     try {
-      std::cout << logPrefix << "Updating repository " + this->name << std::endl;
+      this->logger->Info("Updating repository " + this->name);
       if (!ClearCache()) throw std::runtime_error("Failed to delete old cache file at '" + this->cacheFilePath.generic_string() + "'");
       DownloadRepository(httpClient, this->supportsCompression);
       return true;
     } catch (std::exception& ex) {
-      std::cout << logPrefix << "Exception: " << ex.what() << std::endl;
-      std::cout << logPrefix << "Failed to use compression, going to fallback" << std::endl;
+      this->logger->Error(std::string("Exception: ") + ex.what());
+      this->logger->Error("Failed to use compression, going to fallback");
     }
   }
   try {
-    std::cout << logPrefix << "Updating repository " + this->name << std::endl;
+    this->logger->Info("Updating repository " + this->name);
 
     if (!ClearCache()) throw std::runtime_error("Failed to delete old cache file at '" + this->cacheFilePath.generic_string() + "'");
     DownloadRepository(httpClient, false);
     return true;
   } catch (std::exception& ex) {
-    std::cout << logPrefix << "Exception: " << ex.what() << std::endl;
+    this->logger->Error(std::string("Exception: ") + ex.what());
   }
   return false;
 }

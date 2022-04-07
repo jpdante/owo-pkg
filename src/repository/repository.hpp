@@ -7,6 +7,7 @@
 #include <string>
 
 #include "../core/http.hpp"
+#include "../core/logging.hpp"
 
 namespace owo {
 struct RepositoryConfig {
@@ -23,6 +24,7 @@ class Repository {
   std::string url;
   bool supportsCompression;
   std::filesystem::path configPath;
+  core::Logger* logger;
 
  private:
   bool loaded;
@@ -30,13 +32,13 @@ class Repository {
   std::ifstream* packageStream;
 
  public:
-  Repository(RepositoryConfig config, std::filesystem::path configPath, std::filesystem::path cachePath);
+  Repository(core::Logger* logger, RepositoryConfig config, std::filesystem::path configPath, std::filesystem::path cachePath);
   ~Repository();
 
  public:
   bool LoadRepository();
-  bool CheckUpdate(std::string logPrefix);
-  bool UpdateRepository(std::string logPrefix);
+  bool CheckUpdate();
+  bool UpdateRepository();
   bool ClearCache();
   std::list<std::string> SearchPackages(std::string packages);
 
@@ -44,4 +46,4 @@ class Repository {
   void DownloadRepository(owo::core::HttpClient httpClient, bool useCompression);
 };
 
-}
+}  // namespace owo
