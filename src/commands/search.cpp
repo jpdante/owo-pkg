@@ -5,6 +5,7 @@
 namespace owo::commands {
 
 void search(Cli* cli, std::set<std::string> packagesNames) {
+  //cli->owopkg->
   /*try {
     RepositoryManager repoManager = RepositoryManager(Shared::config.repositoryPath, Shared::config.cachePath);
 

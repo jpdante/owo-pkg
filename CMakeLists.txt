@@ -11,6 +11,8 @@ add_executable (owo
 "src/core/database.cpp"
 "src/repository/repository.cpp"
 "src/repository/repository-manager.cpp"
+"src/package/package.cpp"
+"src/package/package-manager.cpp"
 "src/commands/install.cpp"
 "src/commands/remove.cpp"
 "src/commands/search.cpp"
