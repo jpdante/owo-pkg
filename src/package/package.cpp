@@ -12,7 +12,8 @@ PackageDependencie::PackageDependencie(nlohmann::json value) {
   this->version = value["version"].get<std::string>();
 }
 
-PackageVersion::PackageVersion(nlohmann::json value) {
+PackageVersion::PackageVersion(Package* package, nlohmann::json value) {
+  this->package = package;
   if (!value.contains("version")) throw std::runtime_error("Json field 'version' not found.");
   if (!value["version"].is_string()) throw std::runtime_error("Json field 'version' invalid type, expected type string.");
   this->version = value["version"].get<std::string>();
@@ -40,7 +41,13 @@ PackageVersion::PackageVersion(nlohmann::json value) {
   if (!value.contains("dependencies")) throw std::runtime_error("Json field 'dependencies' not found.");
   if (!value["dependencies"].is_array()) throw std::runtime_error("Json field 'dependencies' invalid type, expected type json array.");
   for (auto sub : value["dependencies"]) {
-    this->dependencies.push_back(PackageDependencie(sub));
+    this->dependencies.push_back(new PackageDependencie(sub));
+  }
+}
+
+PackageVersion::~PackageVersion() {
+  for (PackageDependencie* packageDependencie : this->dependencies) {
+    delete packageDependencie;
   }
 }
 
@@ -60,12 +67,18 @@ Package::Package(nlohmann::json value) {
   if (!value.contains("versions")) throw std::runtime_error("Json field 'versions' not found.");
   if (!value["versions"].is_array()) throw std::runtime_error("Json field 'versions' invalid type, expected type json array.");
   for (auto sub : value["versions"]) {
-    this->versions.push_back(PackageVersion(sub));
+    this->versions.push_back(new PackageVersion(this, sub));
   }
 
   if (!value.contains("latest_version")) throw std::runtime_error("Json field 'latest_version' not found.");
   if (!value["latest_version"].is_string()) throw std::runtime_error("Json field 'latest_version' invalid type, expected type string.");
   this->latest_version = value["latest_version"].get<std::string>();
+}
+
+Package::~Package() {
+  for (PackageVersion* packageVersion : this->versions) {
+    delete packageVersion;
+  }
 }
 
 }  // namespace owo
