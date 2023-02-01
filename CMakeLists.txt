@@ -1,5 +1,6 @@
 cmake_minimum_required (VERSION 3.8)
 set (CMAKE_CXX_STANDARD 17)
+set (CMAKE_EXPORT_COMPILE_COMMANDS 1) 
 
 project ("owo-pkg")
 add_executable (owo
@@ -31,13 +32,13 @@ find_package(ZLIB REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(unofficial-curlpp CONFIG REQUIRED)
 find_package(indicators CONFIG REQUIRED)
-find_package(nlohmann_json CONFIG REQUIRED)
 find_package(toml11 CONFIG REQUIRED)
 find_package(clipp CONFIG REQUIRED)
 find_package(unofficial-sqlite3 CONFIG REQUIRED)
+find_package(RapidJSON CONFIG REQUIRED)
 
 # Include libraries
 target_include_directories(owo PRIVATE) # ${EXTERNAL_LIB_HEADERS})
 
 # Link libraries
-target_link_libraries(owo PUBLIC unofficial::curlpp::curlpp indicators::indicators clipp::clipp nlohmann_json nlohmann_json::nlohmann_json toml11::toml11 OpenSSL::SSL ZLIB::ZLIB unofficial::sqlite3::sqlite3)
+target_link_libraries(owo PUBLIC unofficial::curlpp::curlpp indicators::indicators clipp::clipp toml11::toml11 OpenSSL::SSL ZLIB::ZLIB unofficial::sqlite3::sqlite3 rapidjson)

@@ -5,6 +5,7 @@
 #include "core/database.hpp"
 #include "core/logging.hpp"
 #include "repository/repository-manager.hpp"
+#include "package/package-manager.hpp"
 #include "package/package.hpp"
 
 class OwOPkg {
@@ -16,10 +17,13 @@ class OwOPkg {
   std::filesystem::path repositoryPath;
   std::filesystem::path cachePath;
   std::filesystem::path databasePath;
+
   owo::core::LoggerManager* loggerManager;
   owo::core::Database* database;
-  owo::RepositoryManager* repositoryManager;
   owo::core::Logger* logger;
+
+  owo::RepositoryManager* repositoryManager;
+  owo::PackageManager* packageManager;
 
  public:
   void Init();
@@ -27,6 +31,8 @@ class OwOPkg {
   void UnregisterAppender(owo::core::Appender* appender);
 
   // Repositories
+  void LoadRepositories();
   void UpdateRepositories();
+  void LoadPackages();
   owo::Package GetPackages();
 };

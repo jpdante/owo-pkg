@@ -21,7 +21,7 @@ class RepositoryManager {
   ~RepositoryManager();
 
  public:
-  void LoadRepositories();
+  void FindRepositories();
   void AddRepository(RepositoryConfig config);
   Repository* GetRepository(std::string name);
   const std::list<Repository*>& GetRepositories();

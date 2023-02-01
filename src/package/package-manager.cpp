@@ -2,9 +2,14 @@
 
 namespace owo {
 
-PackageManager::PackageManager(RepositoryManager* repositoryManager) { this->repositoryManager = repositoryManager; }
+PackageManager::PackageManager(RepositoryManager* repositoryManager, core::LoggerManager* loggerManager) {
+  this->repositoryManager = repositoryManager;
+  this->logger = loggerManager->GetLogger();
+}
 
-PackageManager::~PackageManager() {}
+PackageManager::~PackageManager() {
+  this->logger->Free();
+}
 
 void PackageManager::InstallPackage(Package package) {}
 

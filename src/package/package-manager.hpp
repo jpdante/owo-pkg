@@ -9,11 +9,12 @@ namespace owo {
 
 class PackageManager {
  public:
-  PackageManager(RepositoryManager* repositoryManager);
+  PackageManager(RepositoryManager* repositoryManager, core::LoggerManager* loggerManager);
   ~PackageManager();
 
  private:
   RepositoryManager* repositoryManager;
+  core::Logger *logger;
 
  public:
   void InstallPackage(Package package);

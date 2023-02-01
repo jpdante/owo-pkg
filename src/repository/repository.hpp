@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <list>
+#include <memory>
 #include <string>
 
 #include "../core/http.hpp"
@@ -29,21 +30,23 @@ class Repository {
  private:
   bool loaded;
   std::filesystem::path cacheFilePath;
-  std::ifstream* packageStream;
+  std::unique_ptr<std::ifstream> packageStream;
 
  public:
   Repository(core::Logger* logger, RepositoryConfig config, std::filesystem::path configPath, std::filesystem::path cachePath);
   ~Repository();
 
  public:
-  bool LoadRepository();
+  bool Load();
+  void Unload();
   bool CheckUpdate();
-  bool UpdateRepository();
+  bool Update();
   bool ClearCache();
   std::list<std::string> SearchPackages(std::string packages);
+  void LoadPackages();
 
  private:
-  void DownloadRepository(owo::core::HttpClient httpClient, bool useCompression);
+  void Download(owo::core::HttpClient httpClient, bool useCompression);
 };
 
 }  // namespace owo

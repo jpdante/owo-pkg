@@ -10,7 +10,9 @@
 namespace owo::commands {
 
 void update(Cli* cli, std::set<std::string> packagesNames) {
+  cli->owopkg->LoadRepositories();
   cli->owopkg->UpdateRepositories();
+  cli->owopkg->LoadPackages();
 
   /*std::filesystem::path repoConfigPath(config.repo_path);
   std::filesystem::path cachePath(config.cache_path);
